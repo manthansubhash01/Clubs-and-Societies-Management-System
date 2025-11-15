@@ -1,6 +1,4 @@
-// Events component removed — preserved as a stub to keep imports safe.
-import React from "react";
-
+// Events component removed — kept as empty stub.
 export default function Events() {
   return null;
 }

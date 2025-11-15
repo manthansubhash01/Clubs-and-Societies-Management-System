@@ -1,6 +1,4 @@
-// Dashboard component removed — preserved as a stub to keep imports safe.
-import React from "react";
-
+// Dashboard removed — kept as empty stub.
 export default function Dashboard() {
   return null;
 }

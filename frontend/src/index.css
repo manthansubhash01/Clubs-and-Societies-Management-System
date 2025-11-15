@@ -1,4 +1,19 @@
 /* Minimal reset so Tailwind CDN can style via utilities in markup.
    We avoid build-time @tailwind directives to keep the pipeline simple. */
+:root{
+   --cream: #f3e6d9;
+   --beige: #f6efe6;
+   --accent: #b8894a;
+   --muted: #7b6f61;
+   --dark: #12202b;
+}
+
 html, body, #root { height: 100%; }
-body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+body { margin: 0; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--beige); color: var(--dark); }
+
+/* Headings use a serif for the elegant theme */
+h1,h2,h3,h4 { font-family: 'Playfair Display', serif }
+
+/* Small helper to give subtle card backgrounds */
+.card-cream { background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,246,242,0.95)); }
+

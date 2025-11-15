@@ -1,6 +1,4 @@
-// Layout removed — preserved as a stub to keep imports safe.
-import React from "react";
-
+// Layout removed — kept as empty stub.
 export default function Layout() {
   return null;
 }
