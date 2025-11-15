@@ -1,58 +1,90 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import React, { useState, useEffect, useRef } from "react";
+import "../index.css";
 
-const Login = () => {
-  const navigate = useNavigate();
+export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [clubs, setClubs] = useState([]);
+  const stripRef = useRef(null);
 
-  const handleTogglePassword = () => setShowPassword((prev) => !prev);
+  useEffect(() => {
+    let mounted = true;
+    const fetchClubs = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/clubs");
+        if (!res.ok) throw new Error("Failed to fetch clubs");
+        const data = await res.json();
+        if (mounted && Array.isArray(data) && data.length) setClubs(data);
+      } catch (e) {
+        console.error(e);
+        if (!mounted) return;
+        setClubs([
+          {
+            id: 1,
+            club_name: "Tech Society",
+            description: "Hackathons, workshops and more.",
+            logo_image: "",
+            type: "TECH",
+            membersCount: 120,
+          },
+          {
+            id: 2,
+            club_name: "Drama Club",
+            description: "Stage plays and acting workshops.",
+            logo_image: "",
+            type: "CULTURAL",
+            membersCount: 45,
+          },
+          {
+            id: 3,
+            club_name: "Robotics",
+            description: "Build robots & compete.",
+            logo_image: "",
+            type: "TECH",
+            membersCount: 32,
+          },
+        ]);
+      }
+    };
+    fetchClubs();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
+  const handleTogglePassword = () => setShowPassword((s) => !s);
+
+  const scrollStrip = (direction = "right") => {
+    const el = stripRef.current;
+    if (!el) return;
+    const delta =
+      direction === "left"
+        ? -Math.min(320, el.clientWidth / 2)
+        : Math.min(320, el.clientWidth / 2);
+    el.scrollBy({ left: delta, behavior: "smooth" });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
-      console.log('Attempting login with:', { email }); // Debug log
       const res = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
-
-      console.log('Response status:', res.status); // Debug log
       const data = await res.json();
-      console.log('Response data:', data); // Debug log
-      
       setLoading(false);
-
-      if (!res.ok) {
-        setError(data.error || "Invalid credentials");
-        return;
-      }
-
-      if (!data.accessToken) {
-        setError("No access token received");
-        return;
-      }
-
-      // Store access token in localStorage
+      if (!res.ok) return setError(data.error || "Invalid credentials");
+      if (!data.accessToken) return setError("No access token received");
       localStorage.setItem("accessToken", data.accessToken);
-      console.log('Token stored, navigating to dashboard');
-      
-      // Redirect after login
-      navigate("/dashboard");
+      alert("Login successful — access token stored.");
     } catch (err) {
       console.error(err);
       setLoading(false);
@@ -61,63 +93,124 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      {/* Left Section */}
-      <section className="login-left">
-        <h1 className="app-title">CLUB & SOCIETY HUB</h1>
-        <p className="description">
-          A central platform to manage all college clubs, societies, and their
-          events effortlessly. Stay updated with announcements, explore
-          activities, and participate in what interests you!
-        </p>
-      </section>
+    <div className="min-h-screen flex flex-col md:flex-row">
+      <aside className="md:w-2/3 bg-amber-50 p-12 flex flex-col justify-center">
+        <div className="max-w-lg">
+          <h1 className="text-4xl font-extrabold text-amber-800">
+            Clubs &amp; Societies
+          </h1>
+          <p className="mt-3 text-amber-600">
+            Discover, join and manage campus clubs. Explore activities and stay
+            updated.
+          </p>
 
-      {/* Right Section */}
-      <section className="login-right">
-        <h2 className="login-heading">Sign In to Continue</h2>
-
-        <form onSubmit={handleSubmit}>
-          {error && <p className="error-message">{error}</p>}
-
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="Enter your college email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <label>Password</label>
-          <div className="password-container">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span
-              className="toggle-password"
-              onClick={handleTogglePassword}
-              title={showPassword ? "Hide password" : "Show password"}
+          <div className="mt-8 flex items-center gap-3">
+            <button
+              onClick={() => scrollStrip("left")}
+              className="px-3 py-2 bg-amber-100 rounded"
             >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
+              ◀
+            </button>
+            <div ref={stripRef} className="flex gap-3 overflow-x-auto py-2">
+              {clubs.length === 0 ? (
+                <div className="min-w-[220px] bg-white p-4 rounded shadow">
+                  Loading clubs...
+                </div>
+              ) : (
+                clubs.map((c) => (
+                  <div
+                    key={c.id}
+                    className="min-w-[220px] bg-white p-4 rounded shadow"
+                  >
+                    <div className="font-semibold">{c.club_name}</div>
+                    <div className="text-sm text-gray-600">{c.description}</div>
+                    <div className="text-xs text-gray-500 mt-2">
+                      {c.type} · {c.membersCount ?? 0} members
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              onClick={() => scrollStrip("right")}
+              className="px-3 py-2 bg-amber-100 rounded"
+            >
+              ▶
+            </button>
           </div>
+        </div>
+      </aside>
 
-          <div className="links">
-            <a href="#">Forgot password?</a>
-            <a href="#">Create an account</a>
-          </div>
+      <main className="md:w-1/3 flex items-center justify-center p-12">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold">Sign In to Continue</h2>
+          <p className="text-sm text-gray-500 mt-2">
+            Use your club core-member account
+          </p>
 
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Log In"}
-          </button>
-        </form>
-      </section>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            {error && (
+              <div className="bg-red-50 text-red-700 p-2 rounded">{error}</div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                type="email"
+                placeholder="Enter your college email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  className="block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={handleTogglePassword}
+                  className="absolute right-2 top-2 text-sm text-amber-600"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+              <a href="#" className="text-amber-600">
+                Forgot password?
+              </a>
+              <a href="#" className="text-amber-600">
+                Create an account
+              </a>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-amber-600 text-white font-semibold py-2 rounded-md hover:bg-amber-700"
+              >
+                {loading ? "Logging in..." : "Log In"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
-};
-
-export default Login;
+}
