@@ -94,12 +94,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <aside className="md:w-2/3 bg-amber-50 p-12 flex flex-col justify-center">
+      <aside className="md:w-2/3 bg-[#f3e6d9] p-12 flex flex-col justify-center">
         <div className="max-w-lg">
-          <h1 className="text-4xl font-extrabold text-amber-800">
+          <h1 className="text-4xl font-extrabold text-[#12202b] font-['Playfair_Display']">
             Clubs &amp; Societies
           </h1>
-          <p className="mt-3 text-amber-600">
+          <p className="mt-3 text-[#7b6f61]">
             Discover, join and manage campus clubs. Explore activities and stay
             updated.
           </p>
@@ -107,7 +107,7 @@ export default function Login() {
           <div className="mt-8 flex items-center gap-3">
             <button
               onClick={() => scrollStrip("left")}
-              className="px-3 py-2 bg-amber-100 rounded"
+              className="px-3 py-2 bg-[#FFC107] text-[#12202b] rounded hover:bg-[#b8894a] transition-colors"
             >
               ◀
             </button>
@@ -133,7 +133,7 @@ export default function Login() {
             </div>
             <button
               onClick={() => scrollStrip("right")}
-              className="px-3 py-2 bg-amber-100 rounded"
+              className="px-3 py-2 bg-[#FFC107] text-[#12202b] rounded hover:bg-[#b8894a] transition-colors"
             >
               ▶
             </button>
@@ -141,10 +141,12 @@ export default function Login() {
         </div>
       </aside>
 
-      <main className="md:w-1/3 flex items-center justify-center p-12">
+      <main className="md:w-1/3 flex items-center justify-center p-12 bg-[#f6efe6]">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold">Sign In to Continue</h2>
-          <p className="text-sm text-gray-500 mt-2">
+          <h2 className="text-2xl font-bold text-[#12202b]">
+            Sign In to Continue
+          </h2>
+          <p className="text-sm text-[#7b6f61] mt-2">
             Use your club core-member account
           </p>
 
@@ -154,11 +156,11 @@ export default function Login() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-[#12202b]">
                 Email
               </label>
               <input
-                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
                 type="email"
                 placeholder="Enter your college email"
                 value={email}
@@ -168,12 +170,12 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-[#12202b]">
                 Password
               </label>
               <div className="mt-1 relative">
                 <input
-                  className="block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                  className="block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
@@ -183,7 +185,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={handleTogglePassword}
-                  className="absolute right-2 top-2 text-sm text-amber-600"
+                  className="absolute right-2 top-2 text-sm text-[#b8894a] hover:text-[#12202b]"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -191,10 +193,10 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <a href="#" className="text-amber-600">
+              <a href="#" className="text-[#b8894a] hover:text-[#12202b]">
                 Forgot password?
               </a>
-              <a href="#" className="text-amber-600">
+              <a href="#" className="text-[#b8894a] hover:text-[#12202b]">
                 Create an account
               </a>
             </div>
@@ -203,7 +205,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-amber-600 text-white font-semibold py-2 rounded-md hover:bg-amber-700"
+                className="w-full bg-[#FFC107] text-[#12202b] font-semibold py-2 rounded-md hover:bg-[#b8894a] transition-colors disabled:opacity-50"
               >
                 {loading ? "Logging in..." : "Log In"}
               </button>

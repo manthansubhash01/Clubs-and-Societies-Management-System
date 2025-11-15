@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 export default function Clubs() {
   const [clubs, setClubs] = useState([]);
@@ -28,41 +30,35 @@ export default function Clubs() {
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--beige)" }}>
+    <div className="min-h-screen bg-[#f3e6d9]">
+      <Navbar />
+
       {/* Hero */}
-      <section
-        className="relative h-72 md:h-96 flex items-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(10,10,10,0.12), rgba(10,10,10,0.12)), url(/hero-placeholder.jpg)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-[rgba(12,8,6,0.15)]"></div>
-        <div className="relative max-w-6xl mx-auto px-6">
-          <div className="text-white max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight drop-shadow">
-              Explore Campus Clubs
-            </h1>
-            <p className="mt-3 text-lg opacity-90">
-              Discover communities, events and students driving campus life.
-            </p>
-          </div>
+      <section className="relative pt-32 pb-16 bg-[#f6efe6]">
+        <div className="max-w-[1200px] mx-auto px-8">
+          <h1 className="font-['Playfair_Display'] text-6xl text-[#12202b] mb-6 font-normal text-center">
+            Explore Campus Clubs
+          </h1>
+          <p className="text-center text-[#7b6f61] text-xl max-w-3xl mx-auto">
+            Discover communities, events and students driving campus life.
+            Browse and learn about student-run clubs across disciplines.
+          </p>
         </div>
       </section>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
+      <main className="max-w-[1200px] mx-auto px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <aside className="lg:col-span-1">
-            <div className="card-cream p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">About Clubs</h2>
-              <p className="text-sm text-[var(--muted)]">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="font-['Playfair_Display'] text-2xl font-semibold mb-2 text-[#12202b]">
+                About Clubs
+              </h2>
+              <p className="text-sm text-[#7b6f61] leading-relaxed">
                 Browse and learn about student-run clubs across disciplines.
                 Each club page includes description, events and contact info.
               </p>
               <div className="mt-4">
-                <button className="inline-block px-4 py-2 bg-[var(--accent)] text-white rounded-md">
+                <button className="inline-block px-6 py-2.5 bg-[#b8894a] text-white rounded-md font-semibold hover:bg-[#12202b] transition-all">
                   Apply / Learn
                 </button>
               </div>
@@ -85,29 +81,29 @@ export default function Clubs() {
                 {clubs.map((c) => (
                   <article
                     key={c.id}
-                    className="rounded-lg shadow card-cream overflow-hidden"
+                    className="rounded-lg shadow-lg bg-white overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all"
                   >
                     <div className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className="h-16 w-16 bg-white rounded-md flex items-center justify-center text-xl font-semibold text-[var(--accent)] border border-transparent">
+                        <div className="h-16 w-16 bg-[#FFC107] rounded-md flex items-center justify-center text-xl font-bold text-[#12202b]">
                           {c.club_name ? c.club_name.charAt(0) : "?"}
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold">
+                          <h3 className="text-xl font-semibold text-[#12202b]">
                             {c.club_name}
                           </h3>
-                          <p className="mt-2 text-sm text-[var(--muted)]">
+                          <p className="mt-2 text-sm text-[#7b6f61] leading-relaxed">
                             {c.description}
                           </p>
                           <div className="mt-4 flex items-center justify-between">
-                            <div className="text-xs text-gray-600">
+                            <div className="text-xs text-[#7b6f61]">
                               {c.type ?? "N/A"} · {c.membersCount ?? 0} members
                             </div>
                             <Link
                               to={`/clubs/${c.id}`}
-                              className="text-[var(--accent)] text-sm font-medium"
+                              className="text-[#b8894a] text-sm font-semibold hover:text-[#12202b] transition-colors"
                             >
-                              View
+                              View →
                             </Link>
                           </div>
                         </div>
@@ -120,6 +116,8 @@ export default function Clubs() {
           </section>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
