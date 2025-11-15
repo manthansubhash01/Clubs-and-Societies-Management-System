@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Clubs() {
   const [clubs, setClubs] = useState([]);
@@ -102,12 +103,12 @@ export default function Clubs() {
                             <div className="text-xs text-gray-600">
                               {c.type ?? "N/A"} · {c.membersCount ?? 0} members
                             </div>
-                            <a
-                              href={`/clubs/${c.id}`}
+                            <Link
+                              to={`/clubs/${c.id}`}
                               className="text-[var(--accent)] text-sm font-medium"
                             >
                               View
-                            </a>
+                            </Link>
                           </div>
                         </div>
                       </div>
