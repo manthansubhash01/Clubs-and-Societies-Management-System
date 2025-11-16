@@ -33,8 +33,7 @@ export default function Clubs() {
     <div className="min-h-screen bg-[#f3e6d9]">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative pt-32 pb-16 bg-[#f6efe6]">
+      <section className="relative pt-32 pb-16 bg-[#f6efe6]\">
         <div className="max-w-[1200px] mx-auto px-8">
           <h1 className="font-['Playfair_Display'] text-6xl text-[#12202b] mb-6 font-normal text-center">
             Explore Campus Clubs
