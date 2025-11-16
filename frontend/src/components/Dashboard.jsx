@@ -45,10 +45,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
-      {/* Navigation Bar */}
       <Navbar />
 
-      {/* Hero Slider Section */}
       <section className="relative h-screen overflow-hidden">
         <div className="relative h-full w-full">
           {slides.map((slide, index) => (
@@ -75,7 +73,6 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Slider Arrows */}
         <button
           onClick={prevSlide}
           className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md border-none text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/40 transition-all z-20"
@@ -105,7 +102,6 @@ const Dashboard = () => {
           </svg>
         </button>
 
-        {/* Slider Dots */}
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4 z-20">
           {slides.map((_, index) => (
             <button
@@ -119,7 +115,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* About Section */}
       <section className="py-24 bg-[#f6efe6]">
         <div className="max-w-[1200px] mx-auto px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -155,7 +150,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Events Section */}
       <section className="py-24 bg-[#f3e6d9]" id="events">
         <div className="max-w-[1200px] mx-auto px-8">
           <h2 className="font-['Playfair_Display'] text-5xl text-[#12202b] text-center mb-12 font-normal">
@@ -240,16 +234,13 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Gallery Section */}
       <section className="py-24 bg-[#f6efe6]" id="gallery">
         <div className="max-w-[1200px] mx-auto px-8">
           <h2 className="font-['Playfair_Display'] text-5xl text-[#12202b] mb-12 font-normal">
             Gallery
           </h2>
 
-          {/* Gallery Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Image 1 - Small */}
             <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1761901219072-491a18f3ccd7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -258,7 +249,6 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Image 2 - Large (spans 2 columns on desktop) */}
             <div className="lg:col-span-2 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1731160352698-cb7e2f142d7a?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -267,7 +257,6 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Image 3 - Small */}
             <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80"
@@ -276,7 +265,6 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Image 4 - Small */}
             <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&q=80"
@@ -285,7 +273,6 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Image 5 - Small */}
             <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -294,7 +281,6 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Image 6 - Small */}
             <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80"
@@ -303,7 +289,6 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Image 7 - Large (spans 2 columns on desktop) */}
             <div className="lg:col-span-2 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
               <img
                 src="https://images.unsplash.com/photo-1695771079040-ef65e928944b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -313,7 +298,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* View All Button */}
           <div className="text-center">
             <button
               onClick={() => navigate("/gallery")}
@@ -340,11 +324,9 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Newsletter Section */}
       <section className="py-24 bg-[#f3e6d9]">
         <div className="max-w-[1300px] mx-auto px-8">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-            {/* Background Image with Overlay */}
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
@@ -355,7 +337,6 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-black/50"></div>
             </div>
 
-            {/* Content */}
             <div className="relative z-10 py-24 px-8 text-center text-white">
               <p className="text-lg mb-2 tracking-wide">Newsletter</p>
               <h2 className="font-['Playfair_Display'] text-5xl md:text-6xl font-normal mb-6">
@@ -367,8 +348,7 @@ const Dashboard = () => {
                 your inbox."
               </p>
 
-              {/* Email Subscription Form */}
-              <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto items-center justify-center">
+              <form className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 <input
                   type="email"
                   placeholder="Email"
@@ -377,14 +357,13 @@ const Dashboard = () => {
                 <button className="w-full sm:w-auto bg-[#8B6F47] text-white px-10 py-4 rounded-lg font-semibold text-lg hover:bg-[#12202b] transition-all hover:-translate-y-0.5 hover:shadow-xl">
                   Subscribe
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-[#12202b] text-center">
+      <section className="py-24 bg-[#062937] text-center">
         <div className="max-w-[700px] mx-auto px-8">
           <h2 className="font-['Playfair_Display'] text-5xl text-white mb-4 font-normal">
             Ready to Join Our Community?
@@ -398,7 +377,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

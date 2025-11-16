@@ -6,7 +6,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if user is logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
@@ -19,7 +18,7 @@ const Navbar = () => {
   };
 
   const handleLogin = () => {
-    navigate("/");
+    navigate("/login");
   };
 
   const isActive = (path) => {
