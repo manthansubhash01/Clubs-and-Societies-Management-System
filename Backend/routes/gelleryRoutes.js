@@ -1,11 +1,10 @@
 import express from "express";
-import { addImage, getGallery} from "../controllers/clubController.js";
-
+import { addImage, getGallery } from "../controllers/galleryController.js";
 
 const router = express.Router();
 
-router.get("/gallery", addImage);
-router.post("/gallery", getGallery);
+router.get("/gallery", getGallery);
+router.post("/gallery", addImage);
 
 
 
