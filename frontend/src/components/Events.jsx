@@ -1,173 +1,102 @@
-import React from "react";
+import React, { useState, useEffect } from "react"; // Import hooks
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import api from "../lib/api";
 
 const Events = () => {
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Cultural Night 2024",
-      date: "15",
-      month: "DEC",
-      year: "2024",
-      description:
-        "Experience diverse cultures through music, dance, and cuisine from around the world",
-      image:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
-      time: "6:00 PM - 10:00 PM",
-      location: "Main Auditorium",
-      category: "Cultural",
-      attendees: 120,
-    },
-    {
-      id: 2,
-      title: "International Food Festival",
-      date: "20",
-      month: "DEC",
-      year: "2024",
-      description:
-        "Taste authentic dishes from around the world prepared by our international students",
-      image:
-        "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80",
-      time: "12:00 PM - 8:00 PM",
-      location: "Campus Grounds",
-      category: "Social",
-      attendees: 200,
-    },
-    {
-      id: 3,
-      title: "Language Exchange Meetup",
-      date: "05",
-      month: "JAN",
-      year: "2025",
-      description:
-        "Practice languages and make new friends in a casual, fun environment",
-      image:
-        "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&q=80",
-      time: "4:00 PM - 6:00 PM",
-      location: "Student Lounge",
-      category: "Educational",
-      attendees: 45,
-    },
-    {
-      id: 4,
-      title: "Tech Hackathon 2025",
-      date: "18",
-      month: "JAN",
-      year: "2025",
-      description:
-        "48-hour coding challenge to build innovative solutions for real-world problems",
-      image:
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&q=80",
-      time: "9:00 AM - 9:00 PM",
-      location: "Tech Hub",
-      category: "Technical",
-      attendees: 80,
-    },
-  ];
+  // Set up state to hold the categorized events
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [ongoingEvents, setOngoingEvents] = useState([]);
+  const [pastEvents, setPastEvents] = useState([]);
 
-  const ongoingEvents = [
-    {
-      id: 5,
-      title: "Annual Sports Week",
-      date: "10",
-      month: "NOV",
-      year: "2024",
-      endDate: "17 NOV",
-      description:
-        "Week-long sports tournament featuring cricket, football, basketball, and more",
-      image:
-        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&q=80",
-      time: "All Day",
-      location: "Sports Complex",
-      category: "Sports",
-      attendees: 350,
-    },
-    {
-      id: 6,
-      title: "Art Exhibition Week",
-      date: "12",
-      month: "NOV",
-      year: "2024",
-      endDate: "19 NOV",
-      description:
-        "Showcase of artwork from talented students across various mediums",
-      image:
-        "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80",
-      time: "10:00 AM - 6:00 PM",
-      location: "Art Gallery",
-      category: "Arts",
-      attendees: 150,
-    },
-  ];
+  /**
+   * Helper function to transform the API event object into the
+   * format your JSX component expects.
+   */
+  const transformEvent = (event) => {
+    const startTime = new Date(event.start_time);
+    const endTime = new Date(event.end_time);
 
-  const pastEvents = [
-    {
-      id: 7,
-      title: "Freshers Welcome Party",
-      date: "15",
-      month: "SEP",
-      year: "2024",
-      description:
-        "Grand welcome celebration for new students with performances and activities",
+    // Helper to format time (e.g., "6:00 PM")
+    const formatTime = (date) =>
+      date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+    return {
+      id: event.id,
+      title: event.name,
+      description: event.description,
+      location: event.venue,
+      
+      // --- Derived from start_time ---
+      date: startTime.getDate().toString(),
+      month: startTime.toLocaleString("en-US", { month: "short" }).toUpperCase(),
+      year: startTime.getFullYear().toString(),
+      time: `${formatTime(startTime)} - ${formatTime(endTime)}`,
+
+      // --- Fields NOT in your API schema ---
+      // Your schema (id, name, description, venue, start_time, end_time, poc, club_id)
+      // does not include image, category, or attendees.
+      // I'm using placeholder data. You'll need to update your API to provide this.
       image:
-        "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80",
-      time: "5:00 PM - 10:00 PM",
-      location: "Main Grounds",
-      category: "Social",
-      attendees: 450,
-    },
-    {
-      id: 8,
-      title: "Alumni Meetup 2024",
-      date: "22",
-      month: "SEP",
-      year: "2024",
-      description:
-        "Networking event connecting current students with successful alumni",
-      image:
-        "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&q=80",
-      time: "6:00 PM - 9:00 PM",
-      location: "Conference Hall",
-      category: "Networking",
-      attendees: 200,
-    },
-    {
-      id: 9,
-      title: "Robotics Workshop",
-      date: "05",
-      month: "OCT",
-      year: "2024",
-      description:
-        "Hands-on workshop on building and programming autonomous robots",
-      image:
-        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80",
-      time: "2:00 PM - 6:00 PM",
-      location: "Engineering Lab",
-      category: "Technical",
-      attendees: 60,
-    },
-    {
-      id: 10,
-      title: "Diwali Celebration",
-      date: "01",
-      month: "NOV",
-      year: "2024",
-      description:
-        "Traditional Diwali festival celebration with lights, music, and sweets",
-      image:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
-      time: "7:00 PM - 11:00 PM",
-      location: "Main Auditorium",
-      category: "Cultural",
-      attendees: 300,
-    },
-  ];
+        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80", // Placeholder
+      category: event.club?.name || "General", // Using related club name if available
+      attendees: 100, // Placeholder
+    };
+  };
+
+  // Fetch and categorize events when the component mounts
+  useEffect(() => {
+    const fetchAndCategorizeEvents = async () => {
+      try {
+        const allEvents = await api.get("/events");
+        
+        if (!allEvents) {
+          throw new Error("No events data received");
+        }
+
+        const now = new Date();
+        const upcoming = [];
+        const ongoing = [];
+        const past = [];
+
+        allEvents.forEach((event) => {
+          const startTime = new Date(event.start_time);
+          const endTime = new Date(event.end_time);
+          
+          // Transform the event to match the JSX structure
+          const transformedEvent = transformEvent(event);
+
+          // Categorize based on time
+          if (endTime < now) {
+            past.push(transformedEvent);
+          } else if (startTime <= now && endTime >= now) {
+            ongoing.push(transformedEvent);
+          } else if (startTime > now) {
+            upcoming.push(transformedEvent);
+          }
+        });
+
+        // Update the state to re-render the component
+        setUpcomingEvents(upcoming);
+        setOngoingEvents(ongoing);
+        setPastEvents(past);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
+    fetchAndCategorizeEvents();
+  }, []); // The empty array [] means this effect runs once on mount
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-[#f6efe6]">
       <Navbar />
 
+      {/* ... (Hero section remains the same) ... */}
       <section className="pt-32 pb-12 bg-gradient-to-b from-[#f3e6d9] to-[#f6efe6]">
         <div className="max-w-[1200px] mx-auto px-8">
           <h1 className="font-['Playfair_Display'] text-6xl text-[#12202b] mb-6 font-normal text-center">
@@ -181,6 +110,7 @@ const Events = () => {
         </div>
       </section>
 
+      {/* This summary section will now dynamically show the counts */}
       <section className="py-8 bg-[#f6efe6]">
         <div className="max-w-[1200px] mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -212,6 +142,7 @@ const Events = () => {
         </div>
       </section>
 
+      {/* This section will now only show if 'ongoingEvents' has items */}
       {ongoingEvents.length > 0 && (
         <section className="py-16 bg-[#f6efe6]">
           <div className="max-w-[1200px] mx-auto px-8">
@@ -327,6 +258,7 @@ const Events = () => {
         </section>
       )}
 
+      {/* This section will now map over the fetched 'upcomingEvents' */}
       <section className="py-16 bg-[#f3e6d9]">
         <div className="max-w-[1200px] mx-auto px-8">
           <h2 className="font-['Playfair_Display'] text-4xl text-[#12202b] mb-8 font-normal">
@@ -338,6 +270,7 @@ const Events = () => {
                 key={event.id}
                 className="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all group"
               >
+                {/* ... (card structure remains the same) ... */}
                 <div className="relative h-56 overflow-hidden">
                   <img
                     src={event.image}
@@ -366,57 +299,18 @@ const Events = () => {
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
-                      <svg
-                        className="w-4 h-4 text-[#b8894a]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      {/* ... (icon) ... */}
+                      <svg className="w-4 h-4 text-[#b8894a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
                       <span>{event.time}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
-                      <svg
-                        className="w-4 h-4 text-[#b8894a]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
+                      {/* ... (icon) ... */}
+                      <svg className="w-4 h-4 text-[#b8894a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /> </svg>
                       <span>{event.location}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
-                      <svg
-                        className="w-4 h-4 text-[#b8894a]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
+                      {/* ... (icon) ... */}
+                      <svg className="w-4 h-4 text-[#b8894a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /> </svg>
                       <span>{event.attendees} attendees</span>
                     </div>
                   </div>
@@ -431,6 +325,7 @@ const Events = () => {
         </div>
       </section>
 
+      {/* This section will now map over the fetched 'pastEvents' */}
       <section className="py-16 bg-[#f6efe6]">
         <div className="max-w-[1200px] mx-auto px-8">
           <h2 className="font-['Playfair_Display'] text-4xl text-[#12202b] mb-8 font-normal">
@@ -442,6 +337,7 @@ const Events = () => {
                 key={event.id}
                 className="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all group"
               >
+                {/* ... (card structure remains the same) ... */}
                 <div className="relative h-56 overflow-hidden">
                   <img
                     src={event.image}
@@ -470,57 +366,18 @@ const Events = () => {
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
-                      <svg
-                        className="w-4 h-4 text-[#b8894a]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      {/* ... (icon) ... */}
+                      <svg className="w-4 h-4 text-[#b8894a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
                       <span>{event.time}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
-                      <svg
-                        className="w-4 h-4 text-[#b8894a]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
+                      {/* ... (icon) ... */}
+                      <svg className="w-4 h-4 text-[#b8894a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /> </svg>
                       <span>{event.location}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
-                      <svg
-                        className="w-4 h-4 text-[#b8894a]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
+                      {/* ... (icon) ... */}
+                      <svg className="w-4 h-4 text-[#b8894a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /> </svg>
                       <span>{event.attendees} attendees</span>
                     </div>
                   </div>

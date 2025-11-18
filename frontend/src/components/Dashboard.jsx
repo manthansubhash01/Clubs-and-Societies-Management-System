@@ -1,11 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import api from "../lib/api";
 
 const Dashboard = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const allEvents = await api.get("/events");
+        
+        if (allEvents && Array.isArray(allEvents)) {
+          const now = new Date();
+          const upcoming = allEvents
+            .filter((event) => new Date(event.start_time) > now)
+            .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
+            .slice(0, 3); // Get only the first 3 upcoming events
+          
+          setUpcomingEvents(upcoming);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUpcomingEvents();
+  }, []);
 
   const slides = [
     {
@@ -156,80 +183,60 @@ const Dashboard = () => {
             Upcoming Events
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all">
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80"
-                  alt="Event"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4 bg-[#FFC107] text-[#12202b] px-4 py-2 rounded text-center font-bold shadow-lg">
-                  <span className="block text-2xl leading-none">15</span>
-                  <span className="block text-xs tracking-widest">DEC</span>
-                </div>
+            {loading ? (
+              <div className="col-span-full text-center text-[#7b6f61]">
+                Loading events...
               </div>
-              <div className="p-6">
-                <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold">
-                  Cultural Night 2024
-                </h3>
-                <p className="text-[#7b6f61] mb-6 leading-relaxed">
-                  Experience diverse cultures through music, dance, and cuisine
-                </p>
-                <button className="w-full bg-[#b8894a] text-white px-8 py-2.5 rounded font-semibold hover:bg-[#12202b] transition-all">
-                  Register Now
-                </button>
+            ) : upcomingEvents.length === 0 ? (
+              <div className="col-span-full text-center text-[#7b6f61]">
+                No upcoming events at the moment
               </div>
-            </div>
+            ) : (
+              upcomingEvents.map((event) => {
+                const startDate = new Date(event.start_time);
+                const day = startDate.getDate();
+                const month = startDate.toLocaleString("en-US", {
+                  month: "short",
+                });
 
-            <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all">
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&q=80"
-                  alt="Event"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4 bg-[#FFC107] text-[#12202b] px-4 py-2 rounded text-center font-bold shadow-lg">
-                  <span className="block text-2xl leading-none">20</span>
-                  <span className="block text-xs tracking-widest">DEC</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold">
-                  International Food Festival
-                </h3>
-                <p className="text-[#7b6f61] mb-6 leading-relaxed">
-                  Taste authentic dishes from around the world
-                </p>
-                <button className="w-full bg-[#b8894a] text-white px-8 py-2.5 rounded font-semibold hover:bg-[#12202b] transition-all">
-                  Register Now
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all">
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&q=80"
-                  alt="Event"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4 bg-[#FFC107] text-[#12202b] px-4 py-2 rounded text-center font-bold shadow-lg">
-                  <span className="block text-2xl leading-none">05</span>
-                  <span className="block text-xs tracking-widest">JAN</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold">
-                  Language Exchange Meetup
-                </h3>
-                <p className="text-[#7b6f61] mb-6 leading-relaxed">
-                  Practice languages and make new friends
-                </p>
-                <button className="w-full bg-[#b8894a] text-white px-8 py-2.5 rounded font-semibold hover:bg-[#12202b] transition-all">
-                  Register Now
-                </button>
-              </div>
-            </div>
+                return (
+                  <div
+                    key={event.id}
+                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all"
+                  >
+                    <div className="relative h-56 overflow-hidden">
+                      <img
+                        src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80"
+                        alt={event.name}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-4 right-4 bg-[#FFC107] text-[#12202b] px-4 py-2 rounded text-center font-bold shadow-lg">
+                        <span className="block text-2xl leading-none">
+                          {day}
+                        </span>
+                        <span className="block text-xs tracking-widest">
+                          {month.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold line-clamp-2">
+                        {event.name}
+                      </h3>
+                      <p className="text-[#7b6f61] mb-2 text-sm">
+                        📍 {event.venue}
+                      </p>
+                      <p className="text-[#7b6f61] mb-6 leading-relaxed line-clamp-2">
+                        {event.description}
+                      </p>
+                      <button className="w-full bg-[#b8894a] text-white px-8 py-2.5 rounded font-semibold hover:bg-[#12202b] transition-all">
+                        Register Now
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>
