@@ -6,6 +6,7 @@ import ClubDetail from "./components/ClubDetail";
 import Dashboard from "./components/Dashboard";
 import Gallery from "./components/Gallery";
 import Events from "./components/Events";
+import EventDetail from "./components/EventDetail";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/events" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/clubs" element={<Clubs />} />
         <Route path="/clubs/:id" element={<ClubDetail />} />
         <Route path="/gallery" element={<Gallery />} />
