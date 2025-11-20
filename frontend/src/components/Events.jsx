@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"; // Import hooks
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { Link } from "react-router-dom";
 import api from "../lib/api";
 
 const Events = () => {
@@ -186,9 +187,9 @@ const Events = () => {
                     <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold line-clamp-2">
                       {event.title}
                     </h3>
-                    <p className="text-[#7b6f61] mb-4 leading-relaxed line-clamp-2">
+                    {/* <p className="text-[#7b6f61] mb-4 leading-relaxed line-clamp-2">
                       {event.description}
-                    </p>
+                    </p> */}
 
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
@@ -247,9 +248,9 @@ const Events = () => {
                       </div>
                     </div>
 
-                    <button className="w-full bg-[#FFC107] text-[#12202b] px-8 py-3 rounded-lg font-semibold hover:bg-[#b8894a] hover:text-white transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                      Join Now
-                    </button>
+                    <Link to={`/events/${event.id}`} className="w-full block text-center bg-[#FFC107] text-[#12202b] px-8 py-3 rounded-lg font-semibold hover:bg-[#b8894a] hover:text-white transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                      Learn More
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -293,9 +294,9 @@ const Events = () => {
                   <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold line-clamp-2">
                     {event.title}
                   </h3>
-                  <p className="text-[#7b6f61] mb-4 leading-relaxed line-clamp-2">
+                  {/* <p className="text-[#7b6f61] mb-4 leading-relaxed line-clamp-2">
                     {event.description}
-                  </p>
+                  </p> */}
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
@@ -315,9 +316,9 @@ const Events = () => {
                     </div>
                   </div>
 
-                  <button className="w-full bg-[#b8894a] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#12202b] transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                    Register Now
-                  </button>
+                  <Link to={`/events/${event.id}`} className="w-full block text-center bg-[#b8894a] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#12202b] transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                    Learn More
+                  </Link>
                 </div>
               </div>
             ))}
@@ -360,9 +361,9 @@ const Events = () => {
                   <h3 className="font-['Playfair_Display'] text-2xl text-[#12202b] mb-3 font-semibold line-clamp-2">
                     {event.title}
                   </h3>
-                  <p className="text-[#7b6f61] mb-4 leading-relaxed line-clamp-2">
+                  {/* <p className="text-[#7b6f61] mb-4 leading-relaxed line-clamp-2">
                     {event.description}
-                  </p>
+                  </p> */}
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-[#7b6f61]">
@@ -382,9 +383,9 @@ const Events = () => {
                     </div>
                   </div>
 
-                  <button className="w-full bg-[#ECD6B4] text-[#12202b] px-8 py-3 rounded-lg font-semibold hover:bg-[#b8894a] hover:text-white transition-all">
-                    View Highlights
-                  </button>
+                  <Link to={`/events/${event.id}`} className="w-full block text-center bg-[#ECD6B4] text-[#12202b] px-8 py-3 rounded-lg font-semibold hover:bg-[#b8894a] hover:text-white transition-all">
+                    Learn More
+                  </Link>
                 </div>
               </div>
             ))}
