@@ -1,13 +1,17 @@
 import jwt from "jsonwebtoken";
 import prisma from "../DB/db.config.js";
 
+// Use the same fallback secret as the auth controller so tokens are
+// verifiable during development if JWT_SECRET is not provided.
+const JWT_SECRET = process.env.JWT_SECRET || "fdgsterdtrdtdtr";
+
 export const authenticate = (req, res, next) => {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer "))
     return res.status(401).json({ error: "No token" });
   const token = header.split(" ")[1];
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET);
     req.user = {
       id: Number(payload.sub),
       club_id: Number(payload.club_id),

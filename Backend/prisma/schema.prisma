@@ -34,15 +34,34 @@ model Club {
 }
 
 model Events {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  venue       String
-  start_time  DateTime
-  end_time    DateTime
-  poc         String
-  club_id     Int
-  club        Club     @relation(fields: [club_id], references: [id])
+  id                    Int            @id @default(autoincrement())
+  name                  String
+  description           String         @db.Text
+  venue                 String
+  start_time            DateTime
+  end_time              DateTime
+  // optional capacity for registrations
+  capacity              Int?
+  // whether registrations are restricted to a specific email domain
+  restrict_email_domain Boolean        @default(false)
+  // allowed email domain when restriction is enabled (e.g. "adypu.edu.in")
+  allowed_email_domain  String?
+  poc                   String
+  club_id               Int
+  club                  Club           @relation(fields: [club_id], references: [id])
+  registrations         Registration[]
+}
+
+model Registration {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  event_id  Int
+  event     Events   @relation(fields: [event_id], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([event_id, email])
 }
 
 model CoreMember {
@@ -64,5 +83,3 @@ model Gallery {
   club_id Int
   club    Club    @relation(fields: [club_id], references: [id])
 }
-
-

@@ -14,11 +14,14 @@ export const getAllEvents = async (req, res) => {
 export const getEventById = async (req, res) => {
   const { id } = req.params;
   try {
-    const event = await prisma.events.findUnique({
-      where: { id: parseInt(id) },
-    });
+    const eventId = parseInt(id);
+    const event = await prisma.events.findUnique({ where: { id: eventId } });
     if (!event) return res.status(404).json({ error: "Event not found" });
-    res.status(200).json(event);
+
+    // include registration count and seats left if capacity present
+    const attendees = await prisma.registration.count({ where: { event_id: eventId } });
+    const seatsLeft = typeof event.capacity === 'number' ? event.capacity - attendees : null;
+    res.status(200).json({ ...event, attendees, seatsLeft });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch event" });
@@ -26,24 +29,37 @@ export const getEventById = async (req, res) => {
 };
 
 export const createEvent = async (req, res) => {
-  const { name, description, venue, start_time, end_time, poc, club_id } =
-    req.body;
+  const {
+    name,
+    description,
+    venue,
+    start_time,
+    end_time,
+    poc,
+    club_id,
+    capacity,
+    restrict_email_domain,
+    allowed_email_domain,
+  } = req.body;
 
   try {
     // Only SUPER_ADMIN can create events for other clubs
-    const targetClubId =
-      req.user.role === "SUPER_ADMIN" && club_id
-        ? parseInt(club_id)
-        : req.user.club_id;
+    const targetClubId = req.user.role === 'SUPER_ADMIN' && club_id ? Number(club_id) : req.user.club_id;
+    // Defensive: trim long descriptions to avoid DB errors while schema migrations are pending
+    const safeDescription = typeof description === 'string' ? description.slice(0, 5000) : description;
+
     const newEvent = await prisma.events.create({
       data: {
         name,
-        description,
+        description: safeDescription,
         venue,
         start_time: new Date(start_time),
         end_time: new Date(end_time),
         poc,
         club_id: targetClubId,
+        capacity: capacity != null ? Number(capacity) : undefined,
+        restrict_email_domain: !!restrict_email_domain,
+        allowed_email_domain: restrict_email_domain ? allowed_email_domain || null : null,
       },
     });
     res.status(201).json(newEvent);
@@ -67,22 +83,13 @@ export const updateEvent = async (req, res) => {
 
   try {
     // enforce club ownership unless SUPER_ADMIN
-    if (req.user.role !== "SUPER_ADMIN") {
-      const result = await prisma.events.updateMany({
-        where: { id: parseInt(id), club_id: req.user.club_id },
-        data,
-      });
-      if (result.count === 0)
-        return res.status(404).json({ error: "Not found or not permitted" });
-      const updatedEvent = await prisma.events.findUnique({
-        where: { id: parseInt(id) },
-      });
-      return res.status(200).json(updatedEvent);
+    const eventId = Number(id);
+    const existing = await prisma.events.findUnique({ where: { id: eventId } });
+    if (!existing) return res.status(404).json({ error: 'Event not found' });
+    if (req.user.role !== 'SUPER_ADMIN' && existing.club_id !== req.user.club_id) {
+      return res.status(403).json({ error: 'Not permitted' });
     }
-    const updatedEvent = await prisma.events.update({
-      where: { id: parseInt(id) },
-      data,
-    });
+    const updatedEvent = await prisma.events.update({ where: { id: eventId }, data });
     res.status(200).json(updatedEvent);
   } catch (error) {
     console.error(error);
@@ -93,15 +100,13 @@ export const updateEvent = async (req, res) => {
 export const deleteEvent = async (req, res) => {
   const { id } = req.params;
   try {
-    if (req.user.role === "SUPER_ADMIN") {
-      await prisma.events.delete({ where: { id: parseInt(id) } });
-      return res.status(204).send();
+    const eventId = Number(id);
+    const existing = await prisma.events.findUnique({ where: { id: eventId } });
+    if (!existing) return res.status(404).json({ error: 'Event not found' });
+    if (req.user.role !== 'SUPER_ADMIN' && existing.club_id !== req.user.club_id) {
+      return res.status(403).json({ error: 'Not permitted' });
     }
-    const result = await prisma.events.deleteMany({
-      where: { id: parseInt(id), club_id: req.user.club_id },
-    });
-    if (result.count === 0)
-      return res.status(404).json({ error: "Not found or not permitted" });
+    await prisma.events.delete({ where: { id: eventId } });
     res.status(204).send();
   } catch (error) {
     console.error(error);
