@@ -8,7 +8,6 @@ import eventRoutes from "./routes/eventRoutes.js";
 import coreMemberRoutes from "./routes/coreMemberRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import galleryRoutes from "./routes/gelleryRoutes.js";
-import { use } from "react";
 import userRoutes from "./routes/userRoutes.js";
 const app = express();
 app.use(cors(
