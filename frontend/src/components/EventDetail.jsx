@@ -12,13 +12,11 @@ const EventDetail = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
-  const role = localStorage.getItem("role");
-
-  const canViewData =
-    role === "SUPER_ADMIN" ||
-    role === "PRESIDENT" ||
-    role === "VICE_PRESIDENT";
+  const canViewData = ["SUPER_ADMIN", "PRESIDENT", "VICE_PRESIDENT"].includes(
+    localStorage.getItem("role")
+  );
 
 //   event details
   useEffect(() => {
@@ -54,12 +52,21 @@ const EventDetail = () => {
 //   submition(form)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError("");
+    // client-side domain check
+    if (event?.restrict_email_domain) {
+      const allowed = (event.allowed_email_domain || "").toLowerCase();
+      if (!form.email?.toLowerCase()?.endsWith(`@${allowed}`)) {
+        setSubmitError(`Registrations are restricted to @${allowed} email addresses`);
+        return;
+      }
+    }
     try {
       await api.post(`/events/${id}/register`, form);
       setSubmitted(true);
     } catch (err) {
       console.error(err);
-      setSubmitted(true); // Even if backend fails, mark as success (optional)
+      setSubmitError(err?.message || "Failed to register");
     }
   };
 
@@ -127,6 +134,8 @@ const EventDetail = () => {
             <p className="text-green-600">Registration successful!</p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+
+              {submitError && <div className="text-red-600">{submitError}</div>}
 
               <input
                 name="name"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../index.css";
 
 export default function Login() {
@@ -10,6 +11,7 @@ export default function Login() {
 
   const [clubs, setClubs] = useState([]);
   const stripRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -84,7 +86,35 @@ export default function Login() {
       if (!res.ok) return setError(data.error || "Invalid credentials");
       if (!data.accessToken) return setError("No access token received");
       localStorage.setItem("accessToken", data.accessToken);
-      alert("Login successful — access token stored.");
+
+      // decode token payload to store role and club_id for quick UI checks
+      const parseJwt = (token) => {
+        try {
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split("")
+              .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+              })
+              .join("")
+          );
+          return JSON.parse(jsonPayload);
+        } catch (err) {
+          console.error("Failed to parse JWT", err);
+          return null;
+        }
+      };
+      const payload = parseJwt(data.accessToken);
+      if (payload) {
+        if (payload.role) localStorage.setItem("role", payload.role);
+        if (payload.club_id) localStorage.setItem("club_id", String(payload.club_id));
+        if (payload.sub) localStorage.setItem("userId", String(payload.sub));
+      }
+
+      // navigate to dashboard for a smoother flow
+      navigate("/dashboard");
     } catch (err) {
       console.error(err);
       setLoading(false);

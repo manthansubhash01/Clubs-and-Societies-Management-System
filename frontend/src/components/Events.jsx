@@ -9,43 +9,29 @@ const Events = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [ongoingEvents, setOngoingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   /**
    * Helper function to transform the API event object into the
    * format your JSX component expects.
    */
   const transformEvent = (event) => {
-    const startTime = new Date(event.start_time);
-    const endTime = new Date(event.end_time);
-
-    // Helper to format time (e.g., "6:00 PM")
-    const formatTime = (date) =>
-      date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-
+    // Simple transformer: map API fields to what the UI expects.
+    const start = new Date(event.start_time);
+    const end = new Date(event.end_time);
+    const timeString = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} - ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
     return {
       id: event.id,
       title: event.name,
       description: event.description,
       location: event.venue,
-      
-      // --- Derived from start_time ---
-      date: startTime.getDate().toString(),
-      month: startTime.toLocaleString("en-US", { month: "short" }).toUpperCase(),
-      year: startTime.getFullYear().toString(),
-      time: `${formatTime(startTime)} - ${formatTime(endTime)}`,
-
-      // --- Fields NOT in your API schema ---
-      // Your schema (id, name, description, venue, start_time, end_time, poc, club_id)
-      // does not include image, category, or attendees.
-      // I'm using placeholder data. You'll need to update your API to provide this.
-      image:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80", // Placeholder
-      category: event.club?.name || "General", // Using related club name if available
-      attendees: 100, // Placeholder
+      date: String(start.getDate()),
+      month: start.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+      time: timeString,
+      image: event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
+      category: event.club?.name || 'General',
+      attendees: event.attendees || 0,
     };
   };
 
@@ -53,49 +39,76 @@ const Events = () => {
   useEffect(() => {
     const fetchAndCategorizeEvents = async () => {
       try {
+        setLoading(true);
         const allEvents = await api.get("/events");
-        
-        if (!allEvents) {
-          throw new Error("No events data received");
-        }
-
         const now = new Date();
         const upcoming = [];
         const ongoing = [];
         const past = [];
 
-        allEvents.forEach((event) => {
+        (allEvents || []).forEach((event) => {
           const startTime = new Date(event.start_time);
           const endTime = new Date(event.end_time);
-          
-          // Transform the event to match the JSX structure
-          const transformedEvent = transformEvent(event);
-
-          // Categorize based on time
-          if (endTime < now) {
-            past.push(transformedEvent);
-          } else if (startTime <= now && endTime >= now) {
-            ongoing.push(transformedEvent);
-          } else if (startTime > now) {
-            upcoming.push(transformedEvent);
-          }
+          const e = transformEvent(event);
+          if (endTime < now) past.push(e);
+          else if (startTime <= now && endTime >= now) ongoing.push(e);
+          else upcoming.push(e);
         });
 
-        // Update the state to re-render the component
         setUpcomingEvents(upcoming);
         setOngoingEvents(ongoing);
         setPastEvents(past);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError('Failed to load events');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAndCategorizeEvents();
   }, []); // The empty array [] means this effect runs once on mount
 
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#f6efe6] pt-24">
+        <Navbar />
+        <div className="max-w-[1200px] mx-auto px-8 mt-10 text-center">Loading events...</div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#f6efe6] pt-24">
+        <Navbar />
+        <div className="max-w-[1200px] mx-auto px-8 mt-10 text-center text-red-600">{error}</div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#f6efe6]">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#f6efe6] pt-24">
       <Navbar />
+
+      {/* Create event button for authorized roles */}
+      <div className="max-w-[1200px] mx-auto px-8 mt-6">
+        {(() => {
+          const role = localStorage.getItem("role");
+          const allowed = ["PRESIDENT", "VICE_PRESIDENT", "HANDLER", "SUPER_ADMIN"];
+          if (role && allowed.includes(role)) {
+            return (
+              <div className="flex justify-end mb-4">
+                <Link to="/events/new" className="bg-[#12202b] text-white px-4 py-2 rounded">Create Event</Link>
+              </div>
+            );
+          }
+          return null;
+        })()}
+      </div>
 
       {/* ... (Hero section remains the same) ... */}
       <section className="pt-32 pb-12 bg-gradient-to-b from-[#f3e6d9] to-[#f6efe6]">

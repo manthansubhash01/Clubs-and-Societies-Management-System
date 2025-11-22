@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { randomBytes } from "crypto";
 
 const ACCESS_EXPIRES = "15m";
-
+const JWT_SECRET = process.env.JWT_SECRET || "fdgsterdtrdtdtr";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -18,7 +18,7 @@ export const login = async (req, res) => {
 
     const accessToken = jwt.sign(
       { sub: String(user.id), club_id: user.club_id, role: user.role },
-      process.env.JWT_SECRET || "fdgsterdtrdtdtr",
+      JWT_SECRET,
       { expiresIn: ACCESS_EXPIRES }
     );
 
@@ -62,7 +62,7 @@ export const refresh = async (req, res) => {
         });
         const accessToken = jwt.sign(
           { sub: String(user.id), club_id: user.club_id, role: user.role },
-          process.env.JWT_SECRET,
+          JWT_SECRET,
           { expiresIn: ACCESS_EXPIRES }
         );
         res.cookie("refreshToken", newRefresh, {

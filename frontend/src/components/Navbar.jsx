@@ -7,12 +7,17 @@ const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
   const handleLogout = () => {
+    // remove stored auth items
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("club_id");
+    localStorage.removeItem("userId");
     setIsLoggedIn(false);
     navigate("/");
   };

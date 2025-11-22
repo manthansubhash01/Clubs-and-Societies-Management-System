@@ -7,6 +7,8 @@ import Dashboard from "./components/Dashboard";
 import Gallery from "./components/Gallery";
 import Events from "./components/Events";
 import EventDetail from "./components/EventDetail";
+import CreateEvent from "./components/CreateEvent";
+import EventRegistrations from "./components/EventRegistrations";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/events/:id/registrations" element={<EventRegistrations />} />
+        <Route path="/events/new" element={<CreateEvent />} />
         <Route path="/clubs" element={<Clubs />} />
         <Route path="/clubs/:id" element={<ClubDetail />} />
         <Route path="/gallery" element={<Gallery />} />
