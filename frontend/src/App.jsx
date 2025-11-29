@@ -9,6 +9,7 @@ import Events from "./components/Events";
 import EventDetail from "./components/EventDetail";
 import CreateEvent from "./components/CreateEvent";
 import EventRegistrations from "./components/EventRegistrations";
+import ManageMembers from "./components/ManageMembers";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/clubs" element={<Clubs />} />
         <Route path="/clubs/:id" element={<ClubDetail />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/admin/members" element={<ManageMembers />} />
       </Routes>
     </Router>
   );

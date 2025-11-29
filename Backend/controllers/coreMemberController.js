@@ -56,6 +56,11 @@ export const createCoreMember = async (req, res) => {
         .json({ error: "Cannot create member for another club" });
     }
 
+    // Only SUPER_ADMIN can assign the SUPER_ADMIN role
+    if (role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
+      return res.status(403).json({ error: "Not permitted to assign SUPER_ADMIN role" });
+    }
+
     const hashed = await bcrypt.hash(password, SALT_ROUNDS);
     const newMember = await prisma.coreMember.create({
       data: {
@@ -82,22 +87,29 @@ export const updateCoreMember = async (req, res) => {
   try {
     // allow only SUPER_ADMIN or members of same club to update
     const where = { id: parseInt(id) };
+    // Prevent non-super admins from changing role to SUPER_ADMIN
+    if (req.body && req.body.role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
+      return res.status(403).json({ error: "Not permitted to assign SUPER_ADMIN role" });
+    }
+
+    // If a password is being updated, hash it before saving
+    const dataToUpdate = { ...(req.body || {}) };
+    if (dataToUpdate.password) {
+      dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, SALT_ROUNDS);
+    }
+
     // if not super admin, ensure club matches
     if (req.user.role !== "SUPER_ADMIN") {
-      // updateMany will return count = 0 if no rows matched (including club mismatch)
       const result = await prisma.coreMember.updateMany({
         where: { id: parseInt(id), club_id: req.user.club_id },
-        data: req.body,
+        data: dataToUpdate,
       });
-      if (result.count === 0)
-        return res.status(404).json({ error: "Not found or not permitted" });
+      if (result.count === 0) return res.status(404).json({ error: "Not found or not permitted" });
       const updatedMember = await prisma.coreMember.findUnique({ where });
       return res.status(200).json(updatedMember);
     }
-    const updatedMember = await prisma.coreMember.update({
-      where,
-      data: req.body,
-    });
+
+    const updatedMember = await prisma.coreMember.update({ where, data: dataToUpdate });
     res.status(200).json(updatedMember);
   } catch (error) {
     console.error(error);

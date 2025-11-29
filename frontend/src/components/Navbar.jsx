@@ -11,6 +11,9 @@ const Navbar = () => {
     setIsLoggedIn(!!token);
   }, []);
 
+  const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
+  const adminRoles = ["SUPER_ADMIN", "PRESIDENT", "VICE_PRESIDENT"];
+
   const handleLogout = () => {
     // remove stored auth items
     localStorage.removeItem("accessToken");
@@ -89,6 +92,18 @@ const Navbar = () => {
               CLUBS
             </a>
           </li>
+          {adminRoles.includes(role) && (
+            <li>
+              <a
+                href="/admin/members"
+                className={`text-[#12202b] font-semibold text-sm tracking-wider hover:text-[#b8894a] transition-colors ${
+                  isActive("/admin/members") ? "border-b-2 border-[#b8894a]" : ""
+                }`}
+              >
+                ADMIN
+              </a>
+            </li>
+          )}
         </ul>
 
         <div className="flex items-center gap-4">
