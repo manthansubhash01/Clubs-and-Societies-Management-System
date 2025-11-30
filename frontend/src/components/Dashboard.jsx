@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Gallery from "./Gallery";
 import api from "../lib/api";
 
 const Dashboard = () => {
@@ -253,93 +254,7 @@ const Dashboard = () => {
       </section>
 
       <section className="py-24 bg-[#f6efe6]" id="gallery">
-        <div className="max-w-[1200px] mx-auto px-8">
-          <h2 className="font-['Playfair_Display'] text-5xl text-[#12202b] mb-12 font-normal">
-            Gallery
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1761901219072-491a18f3ccd7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 1"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="lg:col-span-2 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1731160352698-cb7e2f142d7a?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 2"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80"
-                alt="Gallery 3"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&q=80"
-                alt="Gallery 4"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 5"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80"
-                alt="Gallery 6"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="lg:col-span-2 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <img
-                src="https://images.unsplash.com/photo-1695771079040-ef65e928944b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 7"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          </div>
-
-          <div className="text-center">
-            <button
-              onClick={() => navigate("/gallery")}
-              className="inline-flex items-center gap-2 bg-transparent border-2 border-[#12202b] text-[#12202b] px-8 py-3 rounded font-semibold hover:bg-[#12202b] hover:text-white transition-all"
-            >
-              VIEW ALL
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6 3L11 8L6 13"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Gallery />
       </section>
 
       <section className="py-24 bg-[#f3e6d9]">

@@ -47,6 +47,7 @@ model Events {
   // allowed email domain when restriction is enabled (e.g. "adypu.edu.in")
   allowed_email_domain  String?
   poc                   String
+  thumbnail_url         String?
   club_id               Int
   club                  Club           @relation(fields: [club_id], references: [id])
   registrations         Registration[]
