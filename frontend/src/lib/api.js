@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:3001/api";
 
-// Simple helper to get access token from localStorage
+
 function getAccessToken() {
   try {
     return localStorage.getItem("accessToken");
@@ -10,7 +10,7 @@ function getAccessToken() {
   }
 }
 
-// Try to refresh token using refresh cookie. Returns new token string or null.
+
 async function refreshToken() {
   try {
     const response = await fetch(API_BASE_URL + "/auth/refresh", {
@@ -31,9 +31,8 @@ async function refreshToken() {
   }
 }
 
-// Low-level request function. Simple and easy to read.
 async function makeRequest(method, endpoint, data) {
-  // build headers
+
   const headers = { "Content-Type": "application/json" };
   const token = getAccessToken();
   if (token) {
@@ -49,33 +48,32 @@ async function makeRequest(method, endpoint, data) {
     options.body = JSON.stringify(data);
   }
 
-  // Try the request once. If 401, try refresh and retry once.
+
   let response = await fetch(API_BASE_URL + endpoint, options);
   if (response.status === 401) {
-    // try refresh
+
     const newToken = await refreshToken();
     if (newToken) {
-      // set new header and retry
+
       headers["Authorization"] = "Bearer " + newToken;
       options.headers = headers;
       response = await fetch(API_BASE_URL + endpoint, options);
     }
   }
 
-  // If still not ok, throw an Error with useful info
   if (!response.ok) {
     const text = await response.text().catch(() => "");
     let body = text;
     try {
       body = JSON.parse(text);
     } catch (e) {
-      // not JSON
+      console.log(e)
     }
     const msg = `HTTP ${response.status} - ${JSON.stringify(body)}`;
     throw new Error(msg);
   }
 
-  // parse body if present
+
   const text = await response.text().catch(() => "");
   try {
     return JSON.parse(text);
