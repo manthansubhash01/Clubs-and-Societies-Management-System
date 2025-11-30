@@ -2,45 +2,58 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import LoadingScreen from "./LoadingScreen";
+import useLoader from "../hooks/useLoader";
 
 export default function Clubs() {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const showLoader = useLoader(loading, 800);
+
   useEffect(() => {
     let mounted = true;
+
     const fetchClubs = async () => {
       try {
         const res = await fetch("http://localhost:3001/api/clubs");
-        if (!res.ok) throw new Error("Failed to fetch");
+        if (!res.ok) throw new Error("Failed to fetch clubs");
         const data = await res.json();
         if (mounted) setClubs(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error(err);
         if (mounted) setError("Could not load clubs");
       } finally {
         if (mounted) setLoading(false);
       }
     };
+
     fetchClubs();
     return () => {
       mounted = false;
     };
   }, []);
 
+  if (showLoader) {
+    return (
+      <div className="min-h-screen bg-[#f3e6d9]">
+        <Navbar />
+        <LoadingScreen message="Loading clubs and communities" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f3e6d9]">
       <Navbar />
 
-      <section className="relative pt-32 pb-16 bg-[#f6efe6]\">
+      <section className="relative pt-32 pb-16 bg-[#f6efe6]">
         <div className="max-w-[1200px] mx-auto px-8">
-          <h1 className="font-['Playfair_Display'] text-6xl text-[#12202b] mb-6 font-normal text-center">
+          <h1 className="font-['Playfair_Display'] text-6xl text-[#12202b] mb-6 text-center">
             Explore Campus Clubs
           </h1>
           <p className="text-center text-[#7b6f61] text-xl max-w-3xl mx-auto">
-            Discover communities, events and students driving campus life.
-            Browse and learn about student-run clubs across disciplines.
+            Discover communities, events and students driving campus life. Browse and learn about student-run clubs across disciplines.
           </p>
         </div>
       </section>
@@ -53,11 +66,10 @@ export default function Clubs() {
                 About Clubs
               </h2>
               <p className="text-sm text-[#7b6f61] leading-relaxed">
-                Browse and learn about student-run clubs across disciplines.
-                Each club page includes description, events and contact info.
+                Browse and learn about student-run clubs across disciplines. Each club page includes its description, events and contact info.
               </p>
               <div className="mt-4">
-                <button className="inline-block px-6 py-2.5 bg-[#b8894a] text-white rounded-md font-semibold hover:bg-[#12202b] transition-all">
+                <button className="px-6 py-2.5 bg-[#b8894a] text-white rounded-md font-semibold hover:bg-[#12202b] transition-all">
                   Apply / Learn
                 </button>
               </div>
@@ -65,16 +77,10 @@ export default function Clubs() {
           </aside>
 
           <section className="lg:col-span-2">
-            {loading ? (
-              <div className="text-center py-12 text-gray-600">
-                Loading clubs…
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="text-center py-12 text-red-600">{error}</div>
             ) : clubs.length === 0 ? (
-              <div className="text-center py-12 text-gray-600">
-                No clubs found.
-              </div>
+              <div className="text-center py-12 text-gray-600">No clubs found.</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {clubs.map((c) => (
