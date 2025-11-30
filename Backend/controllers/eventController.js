@@ -40,6 +40,7 @@ export const createEvent = async (req, res) => {
     capacity,
     restrict_email_domain,
     allowed_email_domain,
+    thumbnail_url,
   } = req.body;
 
   try {
@@ -56,6 +57,7 @@ export const createEvent = async (req, res) => {
         start_time: new Date(start_time),
         end_time: new Date(end_time),
         poc,
+        thumbnail_url: thumbnail_url || null,
         club_id: targetClubId,
         capacity: capacity != null ? Number(capacity) : undefined,
         restrict_email_domain: !!restrict_email_domain,

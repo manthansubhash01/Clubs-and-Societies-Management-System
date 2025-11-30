@@ -29,7 +29,7 @@ const Events = () => {
       date: String(start.getDate()),
       month: start.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
       time: timeString,
-      image: event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
+      image: event.thumbnail_url || event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
       category: event.club?.name || 'General',
       attendees: event.attendees || 0,
     };

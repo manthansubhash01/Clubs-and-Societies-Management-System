@@ -12,6 +12,7 @@ const CreateEvent = () => {
     end_time: "",
     capacity: "",
     poc: "",
+    thumbnail_url: "",
     restrict_email_domain: false,
     allowed_email_domain: "adypu.edu.in",
   });
@@ -52,6 +53,7 @@ const CreateEvent = () => {
           <input name="name" value={form.name} onChange={onChange} placeholder="Event title" className="w-full border px-3 py-2 rounded" required />
           <textarea name="description" value={form.description} onChange={onChange} placeholder="Description" className="w-full border px-3 py-2 rounded" rows={4} />
           <input name="venue" value={form.venue} onChange={onChange} placeholder="Venue" className="w-full border px-3 py-2 rounded" />
+          <input name="thumbnail_url" value={form.thumbnail_url} onChange={onChange} placeholder="Thumbnail Image URL (optional)" className="w-full border px-3 py-2 rounded" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm">Start</label>

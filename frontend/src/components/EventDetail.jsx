@@ -100,7 +100,7 @@ const EventDetail = () => {
       <main className="max-w-[900px] mx-auto px-6 py-12 mt-24">
 
         <img
-          src={event.image}
+          src={event.thumbnail_url || event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80'}
           alt={event.name}
           className="w-full rounded-lg mb-6"
         />
