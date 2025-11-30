@@ -10,30 +10,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUpcomingEvents = async () => {
-      try {
-        const allEvents = await api.get("/events");
-        
-        if (allEvents && Array.isArray(allEvents)) {
-          const now = new Date();
-          const upcoming = allEvents
-            .filter((event) => new Date(event.start_time) > now)
-            .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
-            .slice(0, 3); // Get only the first 3 upcoming events
-          
-          setUpcomingEvents(upcoming);
-        }
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUpcomingEvents();
-  }, []);
-
   const slides = [
     {
       title: "Experience Global Connections and Unity",
@@ -57,6 +33,38 @@ const Dashboard = () => {
         "https://images.unsplash.com/photo-1744232255607-cad8c181b221?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FtcHVzJTIwY2x1YiUyMGV2ZW50fGVufDB8fDB8fHww",
     },
   ];
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const allEvents = await api.get("/events");
+
+        if (allEvents && Array.isArray(allEvents)) {
+          const now = new Date();
+          const upcoming = allEvents
+            .filter((event) => new Date(event.start_time) > now)
+            .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
+            .slice(0, 3);
+
+          setUpcomingEvents(upcoming);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUpcomingEvents();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); 
+
+    return () => clearInterval(interval);
+  }, [slides.length]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -92,8 +100,11 @@ const Dashboard = () => {
                 <p className="text-xl leading-relaxed mb-10 max-w-[600px] opacity-95">
                   {slide.subtitle}
                 </p>
-                <button className="bg-[#FFC107] text-[#12202b] px-12 py-4 rounded font-bold text-base tracking-widest hover:bg-black hover:text-[#FFC107] transition-all hover:-translate-y-0.5 hover:shadow-2xl">
-                  RSVP
+                <button
+                  onClick={() => navigate("/events")}
+                  className="bg-[#FFC107] text-[#12202b] px-12 py-4 rounded font-bold text-base tracking-widest hover:bg-black hover:text-[#FFC107] transition-all hover:-translate-y-0.5 hover:shadow-2xl"
+                >
+                  Events
                 </button>
               </div>
             </div>
