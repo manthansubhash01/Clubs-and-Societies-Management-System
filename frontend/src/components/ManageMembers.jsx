@@ -12,6 +12,10 @@ const ManageMembers = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', role: 'MEMBER', password: '' });
   const [editingId, setEditingId] = useState(null);
 
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
   const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
   if (!allowedRoles.includes(role)) {
     return (
@@ -23,9 +27,7 @@ const ManageMembers = () => {
     );
   }
 
-  useEffect(() => {
-    fetchMembers();
-  }, []);
+
 
   const fetchMembers = async () => {
     try {
@@ -46,7 +48,7 @@ const ManageMembers = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      // club_id: if not superadmin, use current user's club_id
+
       const club_id = localStorage.getItem('club_id') || undefined;
       const payload = { ...form, club_id };
       await api.post('/members', payload);

@@ -15,7 +15,7 @@ const Navbar = () => {
   const adminRoles = ["SUPER_ADMIN", "PRESIDENT", "VICE_PRESIDENT"];
 
   const handleLogout = () => {
-    // remove stored auth items
+
     localStorage.removeItem("accessToken");
     localStorage.removeItem("token");
     localStorage.removeItem("role");

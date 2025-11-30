@@ -87,7 +87,6 @@ export default function Login() {
       if (!data.accessToken) return setError("No access token received");
       localStorage.setItem("accessToken", data.accessToken);
 
-      // decode token payload to store role and club_id for quick UI checks
       const parseJwt = (token) => {
         try {
           const base64Url = token.split(".")[1];
@@ -113,7 +112,6 @@ export default function Login() {
         if (payload.sub) localStorage.setItem("userId", String(payload.sub));
       }
 
-      // navigate to dashboard for a smoother flow
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
