@@ -12,7 +12,7 @@ export const getAllClubs = async (req, res) => {
       }
     });
     
-    // Add actual member count to response
+
     const clubsWithMemberCount = clubs.map(club => ({
       ...club,
       membersCount: club._count.core_members
@@ -43,7 +43,7 @@ export const getClubById = async (req, res) => {
         event: {
           where: {
             start_time: {
-              gte: new Date() // Only upcoming events
+              gte: new Date() 
             }
           },
           select: {
@@ -72,7 +72,7 @@ export const getClubById = async (req, res) => {
       return res.status(404).json({ error: "Club not found" });
     }
     
-    // Add actual member count to response
+
     const clubWithMemberCount = {
       ...club,
       membersCount: club._count.core_members
