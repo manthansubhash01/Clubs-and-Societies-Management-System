@@ -111,7 +111,7 @@ const Events = () => {
 
           <div className="relative z-20 flex justify-end">
             {(() => {
-              const role = localStorage.getItem("role");
+              const role = sessionStorage.getItem("role") || localStorage.getItem("role");
               const allowed = [
                 "PRESIDENT",
                 "VICE_PRESIDENT",
