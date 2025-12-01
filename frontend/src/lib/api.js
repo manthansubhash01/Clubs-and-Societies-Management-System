@@ -3,7 +3,8 @@ const API_BASE_URL = "http://localhost:3001/api";
 
 function getAccessToken() {
   try {
-    return localStorage.getItem("accessToken");
+    // prefer sessionStorage so token does not persist across browser restarts
+    return sessionStorage.getItem("accessToken");
   } catch (err) {
     console.error("Could not read accessToken:", err);
     return null;
@@ -21,7 +22,12 @@ async function refreshToken() {
     if (!response.ok) return null;
     const body = await response.json();
     if (body && body.accessToken) {
-      localStorage.setItem("accessToken", body.accessToken);
+      // store in sessionStorage by default (non-persistent). keep localStorage for compatibility.
+      try {
+        sessionStorage.setItem("accessToken", body.accessToken);
+      } catch (err) {
+        console.debug("sessionStorage set failed:", err);
+      }
       return body.accessToken;
     }
     return null;
@@ -66,8 +72,8 @@ async function makeRequest(method, endpoint, data) {
     let body = text;
     try {
       body = JSON.parse(text);
-    } catch (e) {
-      console.log(e)
+    } catch (err) {
+      console.debug(err);
     }
     const msg = `HTTP ${response.status} - ${JSON.stringify(body)}`;
     throw new Error(msg);
@@ -77,7 +83,8 @@ async function makeRequest(method, endpoint, data) {
   const text = await response.text().catch(() => "");
   try {
     return JSON.parse(text);
-  } catch (e) {
+  } catch (err) {
+    console.debug(err);
     return text;
   }
 }

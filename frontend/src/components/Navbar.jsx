@@ -7,15 +7,21 @@ const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
+    const token = sessionStorage.getItem("accessToken") || sessionStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
-  const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
+  const role = typeof window !== 'undefined' ? (sessionStorage.getItem('role') || localStorage.getItem('role')) : null;
   const adminRoles = ["SUPER_ADMIN", "PRESIDENT", "VICE_PRESIDENT"];
 
   const handleLogout = () => {
 
+    // clear session storage first (preferred) and also clear legacy localStorage keys
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("role");
+    sessionStorage.removeItem("club_id");
+    sessionStorage.removeItem("userId");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("token");
     localStorage.removeItem("role");
