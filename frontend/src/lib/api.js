@@ -1,6 +1,5 @@
 const API_BASE_URL = "http://localhost:3001/api";
 
-// Helper function to check if JWT is expired
 function isTokenExpired(token) {
   if (!token) return true;
   try {
@@ -13,10 +12,8 @@ function isTokenExpired(token) {
 
 function getAccessToken() {
   try {
-    // prefer sessionStorage so token does not persist across browser restarts
     const token = sessionStorage.getItem("accessToken");
 
-    // Check if token is expired
     if (token && isTokenExpired(token)) {
       console.log("Token expired, removing from storage");
       sessionStorage.removeItem("accessToken");
@@ -43,7 +40,6 @@ async function refreshToken() {
     if (!response.ok) return null;
     const body = await response.json();
     if (body && body.accessToken) {
-      // store in sessionStorage by default (non-persistent). keep localStorage for compatibility.
       try {
         sessionStorage.setItem("accessToken", body.accessToken);
       } catch (err) {

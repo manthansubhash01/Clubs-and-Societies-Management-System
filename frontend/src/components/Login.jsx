@@ -21,6 +21,7 @@ export default function Login() {
   const [clubs, setClubs] = useState([]);
   const stripRef = useRef(null);
   const navigate = useNavigate();
+  const autoScrollIntervalRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -29,36 +30,13 @@ export default function Login() {
         const res = await fetch("http://localhost:3001/api/clubs");
         if (!res.ok) throw new Error("Failed to fetch clubs");
         const data = await res.json();
-        if (mounted && Array.isArray(data) && data.length) setClubs(data);
+        if (mounted && Array.isArray(data) && data.length) {
+          setClubs(data);
+        }
       } catch (e) {
-        console.error(e);
-        if (!mounted) return;
-        setClubs([
-          {
-            id: 1,
-            club_name: "Tech Society",
-            description: "Hackathons, workshops and more.",
-            logo_image: "",
-            type: "TECH",
-            membersCount: 120,
-          },
-          {
-            id: 2,
-            club_name: "Drama Club",
-            description: "Stage plays and acting workshops.",
-            logo_image: "",
-            type: "CULTURAL",
-            membersCount: 45,
-          },
-          {
-            id: 3,
-            club_name: "Robotics",
-            description: "Build robots & compete.",
-            logo_image: "",
-            type: "TECH",
-            membersCount: 32,
-          },
-        ]);
+        console.error("Failed to fetch clubs:", e);
+
+        if (mounted) setClubs([]);
       }
     };
     fetchClubs();
@@ -67,16 +45,56 @@ export default function Login() {
     };
   }, []);
 
+  useEffect(() => {
+    if (clubs.length > 0) {
+      autoScrollIntervalRef.current = setInterval(() => {
+        const el = stripRef.current;
+        if (el) {
+          const scrollAmount = 1;
+          const itemWidth = 144;
+          const singleSetWidth = itemWidth * clubs.length;
+
+          if (el.scrollLeft >= singleSetWidth) {
+            el.scrollLeft = el.scrollLeft - singleSetWidth;
+          } else {
+            el.scrollLeft += scrollAmount;
+          }
+        }
+      }, 30);
+    }
+
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
+    };
+  }, [clubs]);
+
   const handleTogglePassword = () => setShowPassword((s) => !s);
 
-  const scrollStrip = (direction = "right") => {
-    const el = stripRef.current;
-    if (!el) return;
-    const delta =
-      direction === "left"
-        ? -Math.min(320, el.clientWidth / 2)
-        : Math.min(320, el.clientWidth / 2);
-    el.scrollBy({ left: delta, behavior: "smooth" });
+  const pauseAutoScroll = () => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+    }
+  };
+
+  const resumeAutoScroll = () => {
+    if (clubs.length > 0) {
+      autoScrollIntervalRef.current = setInterval(() => {
+        const el = stripRef.current;
+        if (el) {
+          const scrollAmount = 1;
+          const itemWidth = 144;
+          const singleSetWidth = itemWidth * clubs.length;
+
+          if (el.scrollLeft >= singleSetWidth) {
+            el.scrollLeft = el.scrollLeft - singleSetWidth;
+          } else {
+            el.scrollLeft += scrollAmount;
+          }
+        }
+      }, 30);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -94,7 +112,7 @@ export default function Login() {
       setLoading(false);
       if (!res.ok) return setError(data.error || "Invalid credentials");
       if (!data.accessToken) return setError("No access token received");
-      // store in sessionStorage so login doesn't persist across browser restarts
+
       sessionStorage.setItem("accessToken", data.accessToken);
 
       const parseJwt = (token) => {
@@ -118,7 +136,8 @@ export default function Login() {
       const payload = parseJwt(data.accessToken);
       if (payload) {
         if (payload.role) sessionStorage.setItem("role", payload.role);
-        if (payload.club_id) sessionStorage.setItem("club_id", String(payload.club_id));
+        if (payload.club_id)
+          sessionStorage.setItem("club_id", String(payload.club_id));
         if (payload.sub) sessionStorage.setItem("userId", String(payload.sub));
       }
 
@@ -132,54 +151,72 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <aside className="md:w-2/3 bg-[#f3e6d9] p-12 flex flex-col justify-center">
-        <div className="max-w-lg">
-          <h1 className="text-4xl font-extrabold text-[#12202b] font-['Playfair_Display']">
+      <div className="md:w-3/5 bg-[#f3e6d9] p-12 flex flex-col justify-center">
+        <div className="max-w-3xl">
+          <h1 className="text-6xl pl-7 font-extrabold text-[#12202b] font-['Playfair_Display']">
             Clubs &amp; Societies
           </h1>
-          <p className="mt-3 text-[#7b6f61]">
+          <p className="mt-3 pl-7 text-[#7b6f61]">
             Discover, join and manage campus clubs. Explore activities and stay
             updated.
           </p>
 
-          <div className="mt-8 flex items-center gap-3">
-            <button
-              onClick={() => scrollStrip("left")}
-              className="px-3 py-2 bg-[#FFC107] text-[#12202b] rounded hover:bg-[#b8894a] transition-colors"
+          <div className="mt-12 pl-7">
+            <div
+              ref={stripRef}
+              className="flex gap-10 overflow-x-auto py-6 scrollbar-hide"
+              onMouseEnter={pauseAutoScroll}
+              onMouseLeave={resumeAutoScroll}
             >
-              ◀
-            </button>
-            <div ref={stripRef} className="flex gap-3 overflow-x-auto py-2">
               {clubs.length === 0 ? (
-                <div className="min-w-[220px] bg-white p-4 rounded shadow">
-                  Loading clubs...
+                <div className="flex gap-8">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="flex-shrink-0 flex flex-col items-center"
+                    >
+                      <div className="w-28 h-28 bg-gray-200 rounded-full animate-pulse"></div>
+                      <div className="w-20 h-4 bg-gray-200 rounded mt-3 animate-pulse"></div>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                clubs.map((c) => (
+                [...clubs, ...clubs, ...clubs].map((c, index) => (
                   <div
-                    key={c.id}
-                    className="min-w-[220px] bg-white p-4 rounded shadow"
+                    key={`${c.id}-${index}`}
+                    className="flex-shrink-0 flex flex-col items-center group cursor-pointer"
+                    title={`${c.club_name} - ${c.type}`}
                   >
-                    <div className="font-semibold">{c.club_name}</div>
-                    <div className="text-sm text-gray-600">{c.description}</div>
-                    <div className="text-xs text-gray-500 mt-2">
-                      {c.type} · {c.membersCount ?? 0} members
+                    <div className="w-28 h-28 rounded-full overflow-hidden shadow-xl border-4 border-white group-hover:border-[#FFC107] transition-all duration-300 group-hover:scale-110">
+                      <img
+                        src={c.logo_image || "/api/placeholder/112/112"}
+                        alt={c.club_name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextElementSibling.style.display = "flex";
+                        }}
+                      />
+                      <div className="w-full h-full bg-gradient-to-br from-[#FFC107] to-[#b8894a] hidden items-center justify-center text-white text-base font-bold">
+                        {c.club_name
+                          .split(" ")
+                          .map((word) => word[0])
+                          .join("")
+                          .substring(0, 3)}
+                      </div>
                     </div>
+                    <p className="text-sm text-[#7b6f61] mt-3 text-center max-w-[112px] font-semibold leading-tight">
+                      {c.club_name}
+                    </p>
                   </div>
                 ))
               )}
             </div>
-            <button
-              onClick={() => scrollStrip("right")}
-              className="px-3 py-2 bg-[#FFC107] text-[#12202b] rounded hover:bg-[#b8894a] transition-colors"
-            >
-              ▶
-            </button>
           </div>
         </div>
-      </aside>
+      </div>
 
-      <main className="md:w-1/3 flex items-center justify-center p-12 bg-[#f6efe6]">
+      <div className="md:w-2/5 pl-13 flex items-center justify-center p-12 bg-[#f6efe6]">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl font-bold text-[#12202b]">
             Sign In to Continue
@@ -258,28 +295,52 @@ export default function Login() {
           {showChange && (
             <div className="mt-6 border-t pt-4">
               <h3 className="text-lg font-semibold">Change Password</h3>
-              <p className="text-sm text-gray-600">Enter current and new password.</p>
-              {cpError && <div className="bg-red-50 text-red-700 p-2 rounded mt-2">{cpError}</div>}
-              {cpSuccess && <div className="bg-green-50 text-green-700 p-2 rounded mt-2">{cpSuccess}</div>}
+              <p className="text-sm text-gray-600">
+                Enter current and new password.
+              </p>
+              {cpError && (
+                <div className="bg-red-50 text-red-700 p-2 rounded mt-2">
+                  {cpError}
+                </div>
+              )}
+              {cpSuccess && (
+                <div className="bg-green-50 text-green-700 p-2 rounded mt-2">
+                  {cpSuccess}
+                </div>
+              )}
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
                   setCpError("");
                   setCpSuccess("");
-                  if (!cpEmail || !cpOld || !cpNew) return setCpError("Please fill all fields");
-                  if (cpNew !== cpConfirm) return setCpError("New passwords do not match");
+                  if (!cpEmail || !cpOld || !cpNew)
+                    return setCpError("Please fill all fields");
+                  if (cpNew !== cpConfirm)
+                    return setCpError("New passwords do not match");
                   setCpLoading(true);
                   try {
-                    const payload = { email: cpEmail, oldPassword: cpOld, newPassword: cpNew };
-                    const res = await fetch("http://localhost:3001/api/auth/change-password", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(payload),
-                    });
+                    const payload = {
+                      email: cpEmail,
+                      oldPassword: cpOld,
+                      newPassword: cpNew,
+                    };
+                    const res = await fetch(
+                      "http://localhost:3001/api/auth/change-password",
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                      }
+                    );
                     const data = await res.json();
                     setCpLoading(false);
-                    if (!res.ok) return setCpError(data.error || "Failed to change password");
-                    setCpSuccess(data.message || "Password changed successfully");
+                    if (!res.ok)
+                      return setCpError(
+                        data.error || "Failed to change password"
+                      );
+                    setCpSuccess(
+                      data.message || "Password changed successfully"
+                    );
                     setCpOld("");
                     setCpNew("");
                     setCpConfirm("");
@@ -293,7 +354,9 @@ export default function Login() {
                 className="mt-3 space-y-3"
               >
                 <div>
-                  <label className="block text-sm font-medium text-[#12202b]">Email</label>
+                  <label className="block text-sm font-medium text-[#12202b]">
+                    Email
+                  </label>
                   <input
                     type="email"
                     value={cpEmail}
@@ -305,7 +368,9 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#12202b]">Current Password</label>
+                  <label className="block text-sm font-medium text-[#12202b]">
+                    Current Password
+                  </label>
                   <input
                     type="password"
                     value={cpOld}
@@ -316,7 +381,9 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#12202b]">New Password</label>
+                  <label className="block text-sm font-medium text-[#12202b]">
+                    New Password
+                  </label>
                   <input
                     type="password"
                     value={cpNew}
@@ -327,7 +394,9 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#12202b]">Confirm New Password</label>
+                  <label className="block text-sm font-medium text-[#12202b]">
+                    Confirm New Password
+                  </label>
                   <input
                     type="password"
                     value={cpConfirm}
@@ -350,7 +419,7 @@ export default function Login() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

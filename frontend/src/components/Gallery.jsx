@@ -10,21 +10,22 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch gallery images from API
   useEffect(() => {
     const fetchGallery = async () => {
       try {
         setLoading(true);
         const galleries = await api.get("/gallery");
-        
-        // Transform gallery data from API format
+
         const transformedImages = (galleries || []).map((item, index) => ({
           id: item.id,
           src: item.url,
           alt: item.text || "Gallery image",
           title: item.text || "Event Photo",
           category: item.club?.club_name || "Gallery",
-          date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "short" }),
+          date: new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+          }),
         }));
 
         setGalleryImages(transformedImages);

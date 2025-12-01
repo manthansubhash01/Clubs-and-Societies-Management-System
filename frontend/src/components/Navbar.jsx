@@ -7,7 +7,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Helper function to check if JWT is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
     try {
@@ -18,7 +17,6 @@ const Navbar = () => {
     }
   };
 
-  // Helper function to clear all auth data
   const clearAuthData = () => {
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("token");
@@ -37,12 +35,10 @@ const Navbar = () => {
       sessionStorage.getItem("accessToken") || sessionStorage.getItem("token");
 
     if (!token || isTokenExpired(token)) {
-      // Token is missing or expired - clear all auth data
       clearAuthData();
       setIsLoggedIn(false);
       setUserRole(null);
     } else {
-      // Token exists and is valid
       setIsLoggedIn(true);
       const role =
         sessionStorage.getItem("role") || localStorage.getItem("role");
@@ -54,7 +50,6 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      // Call logout API to clear refresh token from server
       await fetch("http://localhost:3001/api/auth/logout", {
         method: "POST",
         credentials: "include",
@@ -63,7 +58,6 @@ const Navbar = () => {
       console.error("Logout API failed:", error);
     }
 
-    // Clear all local auth data
     clearAuthData();
     setIsLoggedIn(false);
     setUserRole(null);
@@ -155,8 +149,7 @@ const Navbar = () => {
           )}
         </ul>
 
-        {/* Login/Logout Section - Right */}
-        <div className="flex items-center gap-4 flex-1 justify-end">
+        <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <button
               onClick={handleLogout}

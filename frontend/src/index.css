@@ -1,18 +1,45 @@
-
-:root{
-   --cream: #f3e6d9;
-   --beige: #f6efe6;
-   --accent: #b8894a;
-   --muted: #7b6f61;
-   --dark: #12202b;
+:root {
+  --cream: #f3e6d9;
+  --beige: #f6efe6;
+  --accent: #b8894a;
+  --muted: #7b6f61;
+  --dark: #12202b;
 }
 
-html, body, #root { height: 100%; }
-body { margin: 0; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--beige); color: var(--dark); }
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  background: var(--beige);
+  color: var(--dark);
+}
 
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Playfair Display", serif;
+}
 
-h1,h2,h3,h4 { font-family: 'Playfair Display', serif }
+.card-cream {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(250, 246, 242, 0.95)
+  );
+}
 
+/* Hide scrollbars for carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 
-.card-cream { background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,246,242,0.95)); }
-
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
