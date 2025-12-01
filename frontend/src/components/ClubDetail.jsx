@@ -17,13 +17,13 @@ export default function ClubDetail() {
     let mounted = true;
     const fetchClub = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/clubs");
-        if (!res.ok) throw new Error("Failed");
+        const res = await fetch(`http://localhost:3001/api/clubs/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch club");
         const data = await res.json();
-        const found = data.find((c) => String(c.id) === String(id));
-        if (mounted) setClub(found || null);
+        if (mounted) setClub(data);
       } catch (err) {
-        if (mounted) setError("Unable to load club");
+        console.error("Error fetching club:", err);
+        if (mounted) setError("Unable to load club details");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -82,7 +82,7 @@ export default function ClubDetail() {
                   {club.club_name}
                 </h1>
                 <p className="text-white/70 mt-3 text-lg font-light">
-                  {club.type} · {club.membersCount ?? 0} members
+                  {club.type} · {club.membersCount || 0} members
                 </p>
               </div>
             </div>
@@ -139,12 +139,30 @@ export default function ClubDetail() {
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold">Core Members</h3>
                 <div className="px-4 py-1 rounded-full text-sm font-medium bg-[var(--accent)]/15 text-[var(--accent)]">
-                  Team
+                  {club.membersCount} members
                 </div>
               </div>
-              <p className="mt-3 text-gray-600">
-                Member list will appear here.
-              </p>
+              <div className="mt-4">
+                {club.core_members && club.core_members.length > 0 ? (
+                  <div className="space-y-3 max-h-48 overflow-y-auto">
+                    {club.core_members.map((member) => (
+                      <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <div className="font-medium text-gray-900">{member.name}</div>
+                          <div className="text-sm text-gray-600">{member.email}</div>
+                        </div>
+                        <div className="text-sm font-medium px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                          {member.role.replace('_', ' ')}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-gray-600">
+                    No core members found for this club.
+                  </p>
+                )}
+              </div>
             </motion.div>
           </div>
 

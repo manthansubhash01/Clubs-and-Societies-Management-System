@@ -80,8 +80,9 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 m-5 mr-7 ml-7 bg-[#F6EFE6] shadow-md">
-      <div className="max-w-[1400px] mx-auto px-12 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
+      <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center">
+        {/* Logo Section - Left */}
+        <div className="flex items-center gap-3 flex-1">
           <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-[#b8894a]">
             <img
               src="https://i.pinimg.com/originals/28/ec/0d/28ec0d6438b1208e40fe39ec0f96c114.jpg"
@@ -94,7 +95,8 @@ const Navbar = () => {
           </span>
         </div>
 
-        <ul className="hidden lg:flex items-center gap-10 list-none">
+        {/* Navigation Section - Center */}
+        <ul className="hidden lg:flex items-center gap-10 list-none flex-1 justify-center">
           <li>
             <a
               href="/dashboard"
@@ -153,27 +155,8 @@ const Navbar = () => {
           )}
         </ul>
 
-        <div className="flex items-center gap-4">
-          <button className="bg-transparent border-none text-[#12202b] p-2 hover:text-[#b8894a] transition-colors">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle
-                cx="8"
-                cy="8"
-                r="6.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M13 13L17 17"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-          <button className="bg-transparent border-none text-[#12202b] font-semibold hover:text-[#b8894a] transition-colors">
-            EN
-          </button>
+        {/* Login/Logout Section - Right */}
+        <div className="flex items-center gap-4 flex-1 justify-end">
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
