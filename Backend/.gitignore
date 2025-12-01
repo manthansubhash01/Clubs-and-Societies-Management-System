@@ -2,5 +2,9 @@
 .env
 /generated/prisma
 
-# Ignore one-off admin script
 scripts/createSuperAdmin.js
+
+# Database seeding and cleanup scripts
+prisma/seed.js
+prisma/deleteAllData.js
+prisma/deleteClubs.js

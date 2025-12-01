@@ -18,13 +18,7 @@ const allowedRoles = ["PRESIDENT", "VICE_PRESIDENT", "HANDLER", "SUPER_ADMIN"];
 
 router.get("/events", getAllEvents);
 router.get("/events/:id", getEventById);
-router.post(
-  "/events",
-  authenticate,
-  requireRole(...allowedRoles),
-  createEvent
-);
-// registration endpoints
+router.post("/events", authenticate, requireRole(...allowedRoles), createEvent);
 router.post("/events/:id/register", createRegistration);
 router.get(
   "/events/:id/registrations",

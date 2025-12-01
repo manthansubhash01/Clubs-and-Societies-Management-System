@@ -24,9 +24,10 @@ enum Role {
 model Club {
   id           Int          @id @default(autoincrement())
   club_name    String
-  description  String
+  description  String       @db.Text
   membersCount Int?         @default(0)
-  logo_image   String
+  logo_image   String       @db.Text
+  poster_image   String    @db.Text
   type         String
   event        Events[]
   core_members CoreMember[]
