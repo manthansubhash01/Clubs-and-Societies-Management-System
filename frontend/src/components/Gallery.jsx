@@ -1,109 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import api from "../lib/api";
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filterCategory, setFilterCategory] = useState("all");
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const galleryImages = [
-    // {
-    //   id: 1,
-    //   src: "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    //   alt: "Students collaborating on project",
-    //   category: "Events",
-    //   title: "Tech Workshop 2024",
-    //   date: "Nov 2024",
-    // },
-    // {
-    //   id: 2,
-    //   src: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80",
-    //   alt: "Cultural event celebration",
-    //   category: "Cultural",
-    //   title: "Cultural Night",
-    //   date: "Oct 2024",
-    // },
-    // {
-    //   id: 3,
-    //   src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80",
-    //   alt: "Workshop session in progress",
-    //   category: "Workshops",
-    //   title: "Leadership Summit",
-    //   date: "Sep 2024",
-    // },
-    // {
-    //   id: 4,
-    //   src: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800&q=80",
-    //   alt: "Student meetup gathering",
-    //   category: "Social",
-    //   title: "Welcome Party",
-    //   date: "Aug 2024",
-    // },
-    // {
-    //   id: 5,
-    //   src: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&q=80",
-    //   alt: "Group discussion session",
-    //   category: "Workshops",
-    //   title: "Innovation Lab",
-    //   date: "Nov 2024",
-    // },
-    // {
-    //   id: 6,
-    //   src: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80",
-    //   alt: "Team activity event",
-    //   category: "Sports",
-    //   title: "Sports Day",
-    //   date: "Oct 2024",
-    // },
-    // {
-    //   id: 7,
-    //   src: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&q=80",
-    //   alt: "Community gathering",
-    //   category: "Events",
-    //   title: "Annual Meetup",
-    //   date: "Sep 2024",
-    // },
-    // {
-    //   id: 8,
-    //   src: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80",
-    //   alt: "Presentation session",
-    //   category: "Cultural",
-    //   title: "Art Exhibition",
-    //   date: "Nov 2024",
-    // },
-    // {
-    //   id: 9,
-    //   src: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80",
-    //   alt: "Social event gathering",
-    //   category: "Social",
-    //   title: "Networking Night",
-    //   date: "Oct 2024",
-    // },
-    // {
-    //   id: 10,
-    //   src: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=800&q=80",
-    //   alt: "Study group session",
-    //   category: "Workshops",
-    //   title: "Study Session",
-    //   date: "Nov 2024",
-    // },
-    // {
-    //   id: 11,
-    //   src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80",
-    //   alt: "Team meeting discussion",
-    //   category: "Events",
-    //   title: "Team Building",
-    //   date: "Sep 2024",
-    // },
-    // {
-    //   id: 12,
-    //   src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80",
-    //   alt: "Sports tournament",
-    //   category: "Sports",
-    //   title: "Cricket Tournament",
-    //   date: "Oct 2024",
-    // },
-  ];
+  // Fetch gallery images from API
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        setLoading(true);
+        const galleries = await api.get("/gallery");
+        
+        // Transform gallery data from API format
+        const transformedImages = (galleries || []).map((item, index) => ({
+          id: item.id,
+          src: item.url,
+          alt: item.text || "Gallery image",
+          title: item.text || "Event Photo",
+          category: item.club?.club_name || "Gallery",
+          date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "short" }),
+        }));
+
+        setGalleryImages(transformedImages);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch gallery:", err);
+        setError("Failed to load gallery images");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGallery();
+  }, []);
 
   const categories = [
     "all",
@@ -175,7 +110,15 @@ const Gallery = () => {
 
       <section className="py-16 bg-[#f6efe6]">
         <div className="max-w-[1400px] mx-auto px-8">
-          {filteredImages.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-16">
+              <p className="text-[#7b6f61] text-lg">Loading gallery...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-16">
+              <p className="text-red-600 text-lg">{error}</p>
+            </div>
+          ) : filteredImages.length === 0 ? (
             <div className="text-center py-16">
               <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[#ECD6B4] mb-6">
                 <svg

@@ -8,6 +8,7 @@ import api from "../lib/api";
 const Dashboard = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    const fetchUpcomingEvents = async () => {
+    const fetchData = async () => {
       try {
         const allEvents = await api.get("/events");
 
@@ -49,14 +50,24 @@ const Dashboard = () => {
 
           setUpcomingEvents(upcoming);
         }
+
+        const galleries = await api.get("/gallery");
+        if (galleries && Array.isArray(galleries)) {
+          const transformedImages = galleries.slice(0, 9).map((item) => ({
+            id: item.id,
+            src: item.url,
+            alt: item.text || "Gallery image",
+          }));
+          setGalleryImages(transformedImages);
+        }
       } catch (error) {
-        console.error("Failed to fetch events:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUpcomingEvents();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -404,138 +415,66 @@ const Dashboard = () => {
           </motion.h2>
 
           <div className="grid grid-cols-3 gap-6 mb-8">
+            {galleryImages.map((image, index) => {
+              const delayValues = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
+              const delay = delayValues[index] || 0;
+              const isCentered = index === 4;
 
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, x: -100, y: -100 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1761901219072-491a18f3ccd7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 1"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
+              if (isCentered) {
+                return (
+                  <motion.div
+                    key={image.id}
+                    className="rounded-lg overflow-hidden shadow-2xl"
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 15,
+                      delay: delay,
+                    }}
+                    whileHover={{ scale: 1.05, zIndex: 10 }}
+                  >
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-64 object-cover"
+                    />
+                  </motion.div>
+                );
+              }
 
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, y: -100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80"
-                alt="Gallery 2"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
+              const animationMap = {
+                0: { x: -100, y: -100 },
+                1: { y: -100 },
+                2: { x: 100, y: -100 },
+                3: { x: -100 },
+                5: { x: 100 },
+                6: { x: -100, y: 100 },
+                7: { y: 100 },
+                8: { x: 100, y: 100 },
+              };
 
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, x: 100, y: -100 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&q=80"
-                alt="Gallery 3"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
+              const initial = animationMap[index];
 
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, x: -100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 4"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
-
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-2xl"
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 15,
-                delay: 0.4,
-              }}
-              whileHover={{ scale: 1.05, zIndex: 10 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1731160352698-cb7e2f142d7a?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery Center"
-                className="w-full h-64 object-cover"
-              />
-            </motion.div>
-
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, x: 100 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80"
-                alt="Gallery 5"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
-
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, x: -100, y: 100 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1695771079040-ef65e928944b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Gallery 6"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
-
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.7 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&q=80"
-                alt="Gallery 7"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
-
-            <motion.div
-              className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
-              initial={{ opacity: 0, x: 100, y: 100 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80"
-                alt="Gallery 8"
-                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </motion.div>
+              return (
+                <motion.div
+                  key={image.id}
+                  className="rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
+                  initial={{ opacity: 0, ...initial }}
+                  whileInView={{ opacity: 1, x: 0, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: delay }}
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </motion.div>
+              );
+            })}
           </div>
 
           <div className="text-center">
