@@ -9,6 +9,15 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [showChange, setShowChange] = useState(false);
+  const [cpEmail, setCpEmail] = useState("");
+  const [cpOld, setCpOld] = useState("");
+  const [cpNew, setCpNew] = useState("");
+  const [cpConfirm, setCpConfirm] = useState("");
+  const [cpError, setCpError] = useState("");
+  const [cpLoading, setCpLoading] = useState(false);
+  const [cpSuccess, setCpSuccess] = useState("");
+
   const [clubs, setClubs] = useState([]);
   const stripRef = useRef(null);
   const navigate = useNavigate();
@@ -222,12 +231,17 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <a href="#" className="text-[#b8894a] hover:text-[#12202b]">
-                Forgot password?
-              </a>
-              <a href="#" className="text-[#b8894a] hover:text-[#12202b]">
-                Create an account
-              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowChange((s) => !s);
+                  setCpError("");
+                  setCpSuccess("");
+                }}
+                className="text-[#b8894a] hover:text-[#12202b]"
+              >
+                {showChange ? "Hide change password" : "Change password"}
+              </button>
             </div>
 
             <div>
@@ -240,6 +254,101 @@ export default function Login() {
               </button>
             </div>
           </form>
+
+          {showChange && (
+            <div className="mt-6 border-t pt-4">
+              <h3 className="text-lg font-semibold">Change Password</h3>
+              <p className="text-sm text-gray-600">Enter current and new password.</p>
+              {cpError && <div className="bg-red-50 text-red-700 p-2 rounded mt-2">{cpError}</div>}
+              {cpSuccess && <div className="bg-green-50 text-green-700 p-2 rounded mt-2">{cpSuccess}</div>}
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setCpError("");
+                  setCpSuccess("");
+                  if (!cpEmail || !cpOld || !cpNew) return setCpError("Please fill all fields");
+                  if (cpNew !== cpConfirm) return setCpError("New passwords do not match");
+                  setCpLoading(true);
+                  try {
+                    const payload = { email: cpEmail, oldPassword: cpOld, newPassword: cpNew };
+                    const res = await fetch("http://localhost:3001/api/auth/change-password", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(payload),
+                    });
+                    const data = await res.json();
+                    setCpLoading(false);
+                    if (!res.ok) return setCpError(data.error || "Failed to change password");
+                    setCpSuccess(data.message || "Password changed successfully");
+                    setCpOld("");
+                    setCpNew("");
+                    setCpConfirm("");
+                    setCpEmail("");
+                  } catch (err) {
+                    console.error(err);
+                    setCpLoading(false);
+                    setCpError("Server error. Please try again.");
+                  }
+                }}
+                className="mt-3 space-y-3"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-[#12202b]">Email</label>
+                  <input
+                    type="email"
+                    value={cpEmail}
+                    onChange={(e) => setCpEmail(e.target.value)}
+                    placeholder="Your email"
+                    required
+                    className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#12202b]">Current Password</label>
+                  <input
+                    type="password"
+                    value={cpOld}
+                    onChange={(e) => setCpOld(e.target.value)}
+                    required
+                    className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#12202b]">New Password</label>
+                  <input
+                    type="password"
+                    value={cpNew}
+                    onChange={(e) => setCpNew(e.target.value)}
+                    required
+                    className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#12202b]">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={cpConfirm}
+                    onChange={(e) => setCpConfirm(e.target.value)}
+                    required
+                    className="mt-1 block w-full border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
+                  />
+                </div>
+
+                <div>
+                  <button
+                    type="submit"
+                    disabled={cpLoading}
+                    className="w-full bg-[#f59e0b] text-[#12202b] font-semibold py-2 rounded-md hover:bg-[#b8894a] transition-colors disabled:opacity-50"
+                  >
+                    {cpLoading ? "Updating..." : "Change Password"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </main>
     </div>

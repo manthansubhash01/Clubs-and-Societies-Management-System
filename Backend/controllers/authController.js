@@ -105,3 +105,29 @@ export const logout = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+
+export const changePassword = async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+    if (!email || !oldPassword || !newPassword)
+      return res.status(400).json({ error: "Missing required fields" });
+
+    const user = await prisma.coreMember.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const ok = await bcrypt.compare(oldPassword, user.password);
+    if (!ok) return res.status(401).json({ error: "Invalid current password" });
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await prisma.coreMember.update({
+      where: { id: user.id },
+      data: { password: hash, refreshTokenHash: null },
+    });
+
+    // clear any active refresh tokens so other sessions must re-login
+    res.json({ message: "Password changed successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
