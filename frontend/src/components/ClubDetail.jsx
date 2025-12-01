@@ -87,7 +87,6 @@ export default function ClubDetail() {
               </div>
             </div>
 
-            {/* Modern overlapping logo */}
             {club.logo_image && (
               <div className="absolute bottom-12 right-10 w-40 h-40 rounded-full bg-white shadow-2xl border-4 border-white flex items-center justify-center overflow-hidden z-10">
                 <img

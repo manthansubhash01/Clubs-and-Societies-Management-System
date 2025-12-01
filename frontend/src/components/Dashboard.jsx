@@ -595,20 +595,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-[#062937] text-center">
-        <div className="max-w-[700px] mx-auto px-8">
-          <h2 className="font-['Playfair_Display'] text-5xl text-white mb-4 font-normal">
-            Ready to Join Our Community?
-          </h2>
-          <p className="text-[#f3e6d9] text-xl mb-10">
-            Become a part of our vibrant international community today
-          </p>
-          <button className="bg-[#FFC107] text-[#12202b] px-12 py-4 rounded font-bold text-lg tracking-wide hover:bg-white transition-all hover:-translate-y-0.5 hover:shadow-2xl">
-            Apply for Membership
-          </button>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );

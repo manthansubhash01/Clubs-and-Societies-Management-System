@@ -7,7 +7,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Helper function to check if JWT is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
     try {
@@ -18,7 +17,6 @@ const Navbar = () => {
     }
   };
 
-  // Helper function to clear all auth data
   const clearAuthData = () => {
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("token");
@@ -37,12 +35,10 @@ const Navbar = () => {
       sessionStorage.getItem("accessToken") || sessionStorage.getItem("token");
 
     if (!token || isTokenExpired(token)) {
-      // Token is missing or expired - clear all auth data
       clearAuthData();
       setIsLoggedIn(false);
       setUserRole(null);
     } else {
-      // Token exists and is valid
       setIsLoggedIn(true);
       const role =
         sessionStorage.getItem("role") || localStorage.getItem("role");
@@ -54,7 +50,6 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      // Call logout API to clear refresh token from server
       await fetch("http://localhost:3001/api/auth/logout", {
         method: "POST",
         credentials: "include",
@@ -63,7 +58,6 @@ const Navbar = () => {
       console.error("Logout API failed:", error);
     }
 
-    // Clear all local auth data
     clearAuthData();
     setIsLoggedIn(false);
     setUserRole(null);
@@ -79,10 +73,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 m-5 mr-7 ml-7 bg-[#F6EFE6] shadow-md">
-      <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center">
+    <nav className="fixed top-0 left-0 right-0 z-50 m-5 mr-7 ml-7 bg-[#F6EFE6] shadow-md rounded-lg">
+      <div className="max-w-[1400px] mx-auto px-12 py-4 flex justify-between items-center">
         {/* Logo Section - Left */}
-        <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-[#b8894a]">
             <img
               src="https://i.pinimg.com/originals/28/ec/0d/28ec0d6438b1208e40fe39ec0f96c114.jpg"
@@ -96,14 +90,12 @@ const Navbar = () => {
         </div>
 
         {/* Navigation Section - Center */}
-        <ul className="hidden lg:flex items-center gap-10 list-none flex-1 justify-center">
+        <ul className="hidden lg:flex items-center gap-10 list-none">
           <li>
             <a
               href="/dashboard"
-              className={`text-[#12202b] font-semibold text-sm tracking-wider hover:text-[#b8894a] transition-colors relative ${
-                isActive("/dashboard")
-                  ? "after:absolute after:bottom-[-8px] after:left-0 after:right-0 after:h-0.5 after:bg-[#b8894a] after:content-[''] border-b-2 border-[#b8894a]"
-                  : ""
+              className={`text-[#12202b] font-semibold text-sm tracking-wider hover:text-[#b8894a] transition-colors ${
+                isActive("/dashboard") ? "border-b-2 border-[#b8894a]" : ""
               }`}
             >
               HOME
@@ -155,8 +147,8 @@ const Navbar = () => {
           )}
         </ul>
 
-        {/* Login/Logout Section - Right */}
-        <div className="flex items-center gap-4 flex-1 justify-end">
+        {/* Login Section - Right */}
+        <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
