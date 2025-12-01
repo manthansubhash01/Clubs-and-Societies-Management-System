@@ -5,7 +5,6 @@ const SALT_ROUNDS = 10;
 
 export const getAllCoreMembers = async (req, res) => {
   try {
-    // if request is authenticated, limit to same club unless SUPER_ADMIN
     if (req.user && req.user.role === "SUPER_ADMIN") {
       const members = await prisma.coreMember.findMany();
       return res.status(200).json(members);
@@ -16,7 +15,7 @@ export const getAllCoreMembers = async (req, res) => {
       });
       return res.status(200).json(members);
     }
-    // unauthenticated: do not expose core member list
+
     return res.status(401).json({ error: "Authentication required" });
   } catch (error) {
     console.error(error);
@@ -46,7 +45,7 @@ export const createCoreMember = async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
   try {
-    // Only SUPER_ADMIN can create members for other clubs
+
     if (
       req.user.role !== "SUPER_ADMIN" &&
       req.user.club_id !== parseInt(club_id)
@@ -56,7 +55,7 @@ export const createCoreMember = async (req, res) => {
         .json({ error: "Cannot create member for another club" });
     }
 
-    // Only SUPER_ADMIN can assign the SUPER_ADMIN role
+
     if (role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
       return res.status(403).json({ error: "Not permitted to assign SUPER_ADMIN role" });
     }
@@ -85,20 +84,20 @@ export const createCoreMember = async (req, res) => {
 export const updateCoreMember = async (req, res) => {
   const { id } = req.params;
   try {
-    // allow only SUPER_ADMIN or members of same club to update
+
     const where = { id: parseInt(id) };
-    // Prevent non-super admins from changing role to SUPER_ADMIN
+
     if (req.body && req.body.role === "SUPER_ADMIN" && req.user.role !== "SUPER_ADMIN") {
       return res.status(403).json({ error: "Not permitted to assign SUPER_ADMIN role" });
     }
 
-    // If a password is being updated, hash it before saving
+
     const dataToUpdate = { ...(req.body || {}) };
     if (dataToUpdate.password) {
       dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, SALT_ROUNDS);
     }
 
-    // if not super admin, ensure club matches
+
     if (req.user.role !== "SUPER_ADMIN") {
       const result = await prisma.coreMember.updateMany({
         where: { id: parseInt(id), club_id: req.user.club_id },
