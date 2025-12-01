@@ -124,12 +124,47 @@ export default function ClubDetail() {
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold">Upcoming Events</h3>
                 <div className="px-4 py-1 rounded-full text-sm font-medium bg-[var(--accent)]/15 text-[var(--accent)]">
-                  Soon
+                  {club.event?.length || 0} events
                 </div>
               </div>
-              <p className="mt-3 text-gray-600">
-                No upcoming events yet. Stay tuned.
-              </p>
+              <div className="mt-4">
+                {club.event && club.event.length > 0 ? (
+                  <div className="space-y-3 max-h-48 overflow-y-auto">
+                    {club.event.slice(0, 3).map((event) => (
+                      <div key={event.id} className="border-l-4 border-blue-500 pl-4 py-2">
+                        <div className="font-semibold text-gray-900">{event.name}</div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          {new Date(event.start_time).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                        <div className="text-sm text-gray-500 mt-1">📍 {event.venue}</div>
+                        {event.description && (
+                          <div className="text-sm text-gray-600 mt-1 line-clamp-2">
+                            {event.description}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {club.event.length > 3 && (
+                      <div className="text-sm text-center text-blue-600 mt-3">
+                        <Link to="/events" className="hover:underline">
+                          View all {club.event.length} events →
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-gray-600">
+                    No upcoming events scheduled. Stay tuned for announcements!
+                  </p>
+                )}
+              </div>
             </motion.div>
 
             <motion.div

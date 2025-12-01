@@ -40,6 +40,26 @@ export const getClubById = async (req, res) => {
             phone: true
           }
         },
+        event: {
+          where: {
+            start_time: {
+              gte: new Date() // Only upcoming events
+            }
+          },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            venue: true,
+            start_time: true,
+            end_time: true,
+            poc: true,
+            thumbnail_url: true
+          },
+          orderBy: {
+            start_time: 'asc'
+          }
+        },
         _count: {
           select: {
             core_members: true

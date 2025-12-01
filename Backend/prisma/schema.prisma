@@ -41,11 +41,11 @@ model Events {
   venue                 String
   start_time            DateTime
   end_time              DateTime
-  // optional capacity for registrations
+
   capacity              Int?
-  // whether registrations are restricted to a specific email domain
+
   restrict_email_domain Boolean        @default(false)
-  // allowed email domain when restriction is enabled (e.g. "adypu.edu.in")
+
   allowed_email_domain  String?
   poc                   String
   thumbnail_url         String?
