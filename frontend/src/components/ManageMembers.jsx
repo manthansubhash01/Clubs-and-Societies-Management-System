@@ -8,14 +8,15 @@ const allowedRoles = ['SUPER_ADMIN', 'PRESIDENT', 'VICE_PRESIDENT'];
 const ManageMembers = () => {
   const [members, setMembers] = useState([]);
   const [clubs, setClubs] = useState([]);
+  const [viewFilter, setViewFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', role: 'MEMBER', password: '', club_id: '' });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
-    const role = typeof window !== 'undefined' ? (sessionStorage.getItem('role') || localStorage.getItem('role')) : null;
-    if (role === 'SUPER_ADMIN') fetchClubs();
+    // fetch clubs for the dropdown and members list
+    fetchClubs();
     fetchMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -113,6 +114,23 @@ const ManageMembers = () => {
     }
   };
 
+  // compute filtered members based on selected view
+  const authorizedRoles = ['PRESIDENT', 'VICE_PRESIDENT', 'HANDLER'];
+  const clubMap = Object.fromEntries(clubs.map((c) => [c.id, c]));
+
+  const filteredMembers = members.filter((m) => {
+    if (viewFilter === 'ALL') return true;
+    if (viewFilter === 'MEMBERS') return m.role === 'MEMBER';
+    if (viewFilter === 'AUTHORIZED') return authorizedRoles.includes(m.role);
+    if (viewFilter === 'SUPER_ADMIN') return m.role === 'SUPER_ADMIN';
+    // club:<id> -> filter by club_id
+    if (typeof viewFilter === 'string' && viewFilter.startsWith('club:')) {
+      const id = Number(viewFilter.split(':')[1]);
+      return Number(m.club_id) === id;
+    }
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-[#f6efe6] pt-24">
       <Navbar />
@@ -147,7 +165,25 @@ const ManageMembers = () => {
         </section>
 
         <section>
-          <h2 className="font-semibold mb-3">Members</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Members</h2>
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-gray-600">View:</label>
+                <select
+                  value={viewFilter}
+                  onChange={(e) => setViewFilter(e.target.value)}
+                  className="p-2 border rounded"
+                >
+                  <option value="ALL">All</option>
+                  <option value="SUPER_ADMIN">Super Admin</option>
+                  {clubs.map((c) => (
+                    <option key={c.id} value={`club:${c.id}`}>
+                      {c.club_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+          </div>
           {loading ? (
             <div>Loading...</div>
           ) : error ? (
@@ -166,13 +202,13 @@ const ManageMembers = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {members.map((m) => (
+                  {filteredMembers.map((m) => (
                     <tr key={m.id} className="border-t">
                       <td className="p-2">{m.name}</td>
                       <td className="p-2">{m.email}</td>
                       <td className="p-2">{m.phone}</td>
                       <td className="p-2">{m.role}</td>
-                      <td className="p-2">{m.club_id}</td>
+                      <td className="p-2">{clubMap[m.club_id]?.club_name || m.club_id}</td>
                       <td className="p-2">
                         <button onClick={() => startEdit(m)} className="mr-2 text-sm text-blue-600">Edit</button>
                         <button onClick={() => handleDelete(m.id)} className="text-sm text-red-600">Delete</button>
