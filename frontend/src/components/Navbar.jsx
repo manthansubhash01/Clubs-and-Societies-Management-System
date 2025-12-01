@@ -3,20 +3,23 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("accessToken") || sessionStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
+  // Helper function to check if JWT is expired
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
+  };
 
-  const role = typeof window !== 'undefined' ? (sessionStorage.getItem('role') || localStorage.getItem('role')) : null;
-  const adminRoles = ["SUPER_ADMIN", "PRESIDENT", "VICE_PRESIDENT"];
-
-  const handleLogout = () => {
-
-    // clear session storage first (preferred) and also clear legacy localStorage keys
+  // Helper function to clear all auth data
+  const clearAuthData = () => {
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("role");
@@ -27,7 +30,43 @@ const Navbar = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("club_id");
     localStorage.removeItem("userId");
+  };
+
+  useEffect(() => {
+    const token =
+      sessionStorage.getItem("accessToken") || sessionStorage.getItem("token");
+
+    if (!token || isTokenExpired(token)) {
+      // Token is missing or expired - clear all auth data
+      clearAuthData();
+      setIsLoggedIn(false);
+      setUserRole(null);
+    } else {
+      // Token exists and is valid
+      setIsLoggedIn(true);
+      const role =
+        sessionStorage.getItem("role") || localStorage.getItem("role");
+      setUserRole(role);
+    }
+  }, []);
+
+  const adminRoles = ["SUPER_ADMIN", "PRESIDENT", "VICE_PRESIDENT"];
+
+  const handleLogout = async () => {
+    try {
+      // Call logout API to clear refresh token from server
+      await fetch("http://localhost:3001/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    }
+
+    // Clear all local auth data
+    clearAuthData();
     setIsLoggedIn(false);
+    setUserRole(null);
     navigate("/");
   };
 
@@ -98,12 +137,14 @@ const Navbar = () => {
               CLUBS
             </a>
           </li>
-          {adminRoles.includes(role) && (
+          {adminRoles.includes(userRole) && (
             <li>
               <a
                 href="/admin/members"
                 className={`text-[#12202b] font-semibold text-sm tracking-wider hover:text-[#b8894a] transition-colors ${
-                  isActive("/admin/members") ? "border-b-2 border-[#b8894a]" : ""
+                  isActive("/admin/members")
+                    ? "border-b-2 border-[#b8894a]"
+                    : ""
                 }`}
               >
                 ADMIN
