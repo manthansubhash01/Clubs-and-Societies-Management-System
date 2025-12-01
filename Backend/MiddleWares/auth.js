@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 import prisma from "../DB/db.config.js";
 
-// Use the same fallback secret as the auth controller so tokens are
-// verifiable during development if JWT_SECRET is not provided.
 const JWT_SECRET = process.env.JWT_SECRET || "fdgsterdtrdtdtr";
 
 export const authenticate = (req, res, next) => {
@@ -32,11 +30,9 @@ export const requireRole =
     next();
   };
 
-
 export const ensureSameClubParam =
   (paramName = "id", resourceTable = null) =>
   async (req, res, next) => {
-
     if (req.user?.role === "SUPER_ADMIN") return next();
     const id = parseInt(req.params[paramName]);
     if (!id) return res.status(400).json({ error: "Invalid id param" });
